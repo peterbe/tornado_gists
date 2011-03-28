@@ -1,0 +1,37 @@
+<form action="/auth/login_or_signup/" method="post" class="login standard">
+<h2>
+Log in and sign up
+</h2>
+
+<div id="invalid-anything" style="display:none; margin-left:10px; color:red">
+  <p>There are still some errors in the form. Please have a look.</p>
+</div>
+
+<div id="invalid-email" style="display:none; margin-left:10px">
+  <p>Unfortunately that email is already used by someone else.<br>
+  You perhaps? <a href="/user/account/password/forgotten/">Click here if you forgot your password</a></p>
+</div>
+
+<div>
+<label>Username:</label>
+<input name="username" value=""><br>
+<label>Password:</label>
+<input type="password" name="password" value=""><br>
+<label>&nbsp;</label>
+<input type="submit" value="Log in">
+</div>
+{{ xsrf_form_html() }}
+</form>
+<p>
+<a href="/user/forgotten/" class="forgotten">Forgotten your password?</a>
+</p>
+
+<p class="openid">
+Or if you prefer...<br>
+
+<a style="padding-left:5px" href="/auth/google/" title="Google"><img style="vertical-align:bottom" src="{{ modules.StaticURL("images/google_openid.png") }}" alt="Google OpenID"></a>
+<a style="padding-left:5px" href="/auth/twitter/" title="Twitter"><img style="vertical-align:bottom" src="{{ modules.StaticURL("images/twitter_oauth.png") }}" alt="Twitter"></a>
+</p>
+
+
+

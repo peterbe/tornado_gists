@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block main %}
+<form action="/add/" method="post">
+{{ xsrf_form_html() }}
+<div>Github Gist ID: <input name="gist_id" value="838529"> <input type="submit" value="Add"></div>
+</form>
+
+<h2>Current gists</h2>
+<ul>
+  {% for gist in gists %}
+    <li><a href="/{{ gist.gist_id }}">{{ gist.gist_id }},
+    <span class="description">{{ gist.description }}</span> by
+    <span class="user">{{ gist.user }}</span></a></li>
+  {% end %}
+</ul>
+{% end %}

@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block main %}
+<h2>{{ gist.gist_id }}: {{ gist.description }}</h2>
+{% if user and gist.user == user %}
+<p>Your gist, wanna <a href="{{ reverse_url('delete_gist', gist.gist_id) }}">delete it</a>?</p>
+{% end %}
+<pre>{{ gist.content }}</pre>
+{% end %}

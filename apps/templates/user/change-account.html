@@ -1,0 +1,20 @@
+<h2 style="margin-bottom:10px">Change your account</h2>
+
+<form action="/user/account/" method="post" class="standard">
+
+<div>
+<label>E-mail:</label>
+<input name="email" value="{{ email }}"><br>
+
+<label>First name:</label>
+<input name="first_name" value="{{ first_name }}"><br>
+
+<label>Last name:</label>
+<input name="last_name" value="{{ last_name }}"><br>
+
+<label>&nbsp;</label>
+<input type="submit" value="Save">
+</div>
+
+{{ xsrf_form_html() }}
+</form>
