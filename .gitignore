@@ -24,3 +24,4 @@ cdn_prefix.conf
 twitter_consumer_secret
 *.old
 gkc.pem
+gists-db
