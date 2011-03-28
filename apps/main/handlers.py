@@ -238,15 +238,28 @@ class BaseHandler(tornado.web.RequestHandler, HTTPSMixin):
         return options
 
 
-@route('/')
+@route('/', name="home")
 class HomeHandler(BaseHandler):
 
-    def get(self):
+    def get(self, by=None):
         options = self.get_base_options()
         user = options['user']
-        options['gists'] = self.db.Gist.find().sort('add_date', DESCENDING)
+        gists_search = {}
+        if by is not None:
+            gists_search = {'user.$id': by._id}
+        options['by'] = by
+        options['gists'] = self.db.Gist.find(gists_search)\
+          .sort('add_date', DESCENDING)
         self.render("home.html", **options)
 
+@route('/by/(\w+)', name="by_user")
+class ByLoginHomeHandler(HomeHandler):
+
+    def get(self, login):
+        user = self.db.User.one({'login':login})
+        if not user:
+            raise tornado.web.HTTPError(404, "No user by that login")
+        super(ByLoginHomeHandler, self).get(by=user)
 
 class BaseAuthHandler(BaseHandler):
 

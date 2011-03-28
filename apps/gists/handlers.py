@@ -7,7 +7,6 @@ from utils.routes import route, route_redirect
 from utils.gist_api import get_gist
 from apps.main.handlers import BaseHandler
 
-print "imported"
 @route(r'/add/', name="add_gist")
 class AddGistHandler(BaseHandler):
 
@@ -34,7 +33,7 @@ class AddGistHandler(BaseHandler):
         #gist.created_at = date_parse(gist_info['created_at'])
         gist.created_at = unicode(gist_info['created_at'])
         gist.files = [unicode(x) for x in gist_info['files']]
-        gist.contents = [u'' for x in gist_info['files']]
+        gist.contents = []
         gist.public = gist_info['public']
         gist.owner = unicode(gist_info['owner'])
         gist.repo = unicode(gist_info['repo'])
@@ -42,9 +41,9 @@ class AddGistHandler(BaseHandler):
         gist.save()
 
         files = iter(gist.files)
-        self._fetch_files(gist, files)
+        self.fetch_files(gist, files)
 
-    def _fetch_files(self, gist, files_iterator, response=None):
+    def fetch_files(self, gist, files_iterator, response=None):
         if response is not None:
             gist.contents.append(unicode(response.body))
             gist.save()
@@ -53,7 +52,7 @@ class AddGistHandler(BaseHandler):
             filename = files_iterator.next()
             http = tornado.httpclient.AsyncHTTPClient()
             url = "http://gist.github.com/raw/%s/%s" % (gist.gist_id, filename) # filename needs to be url quoted??
-            http.fetch(url, callback=lambda r:self._fetch_files(gist, files_iterator, r))
+            http.fetch(url, callback=lambda r:self.fetch_files(gist, files_iterator, r))
 
         except StopIteration:
             self.redirect(self.reverse_url('view_gist', gist.gist_id))

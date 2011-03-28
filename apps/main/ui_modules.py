@@ -428,3 +428,19 @@ class HelpPageTitle(tornado.web.UIModule):
                 return each['label']
 
         return "Help on GKC"
+
+
+import pygments
+import pygments.lexers
+from pygments.formatters import HtmlFormatter
+
+class DisplayCode(tornado.web.UIModule):
+    def render(self, code, filename):
+        if filename.endswith('.py'):
+            lexer = 'python'
+        else:
+            raise NotImplementedError("WORK HARDER! %r"% filename)
+
+        lexer = pygments.lexers.get_lexer_by_name(lexer)
+        code = pygments.highlight(code, lexer, HtmlFormatter())
+        return code
