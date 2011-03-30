@@ -9,9 +9,10 @@
 
 {% for i, filename in enumerate(gist.files) %}
 <p>File: <code>{{ filename }}</code></p>
-{{ modules.DisplayCode(gist.contents[i], filename) }}
+<script src="https://gist.github.com/{{ gist.gist_id }}.js?file={{ filename }}"></script> 
 {% end %}
-{% end %}
+
+{% end %}<!-- end main block -->
 
 
 {% block extra_head %}
