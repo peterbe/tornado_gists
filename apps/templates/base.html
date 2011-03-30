@@ -1,8 +1,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-<title>Tornado Gists - explaining Tornado on gist at a time</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <title>Tornado Gists - explaining Tornado on gist at a time</title>
+  <link rel="shortcut icon" href="{{ static_url('images/favicon.ico') }}" type="image/x-icon" />
   <link rel="stylesheet" href="{{ static_url('css/base.css') }}">
   {% block extra_head %}
   {% end %}
@@ -10,16 +11,6 @@
 <body>
 <div id="body">
 <div id="header">
-<table>
-<tr>
-<td class="logo"><a href="/"><img src="{{ static_url("images/tornado.png") }}" alt="Tornado"/></a></td>
-<td class="title"><h1>GISTS</h1></td>
-
-</tr>
-</table>
-</div>
-<div id="content">
-
     <div id="login" style="float:right">
       <p>
       {% if user %}
@@ -30,6 +21,17 @@
       {% end %}
       </p>
     </div>
+
+<table>
+<tr>
+<td class="logo"><a href="/"><img src="{{ static_url("images/tornado.png") }}" alt="Tornado"/></a></td>
+<td class="title"><h1>GISTS</h1></td>
+
+</tr>
+</table>
+</div>
+<div id="content">
+
     <div id="main">
     {% block main %}
 
