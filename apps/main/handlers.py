@@ -312,22 +312,18 @@ class GithubMixin(tornado.auth.OAuth2Mixin):
             callback(None)
             return
 
-        #print "FIELDS"
-        #print fields
-        #print "RESPONSE"
-        #print response
-        print "self.request.arguments"
-        print self.request.arguments
-        print "RESPONSE.BODY:"
-        print response.body
+        #print "self.request.arguments"
+        #print self.request.arguments
+        #print "RESPONSE.BODY:"
+        #print response.body
 
         session = {
           "access_token": cgi.parse_qs(response.body)["access_token"][-1],
           "expires": cgi.parse_qs(response.body).get("expires")
         }
-        print "SESSION"
-        print session
-        print "\n"
+        #print "SESSION"
+        #print session
+        #print "\n"
 
         self.github_request(
           path="/user/show",
@@ -343,11 +339,9 @@ class GithubMixin(tornado.auth.OAuth2Mixin):
             callback(None)
             return
 
-        print "&&&& user"
-        pprint(user)
+        #pprint(user)
         fieldmap = user['user']
-        #for field in fields:
-        #    fieldmap[field] = user.get(field)
+        print 'session.get("expires")', repr(session.get("expires"))
 
         fieldmap.update({"access_token": session["access_token"],
                          "session_expires": session.get("expires")})
@@ -417,7 +411,6 @@ class GithubLoginHandler(BaseAuthHandler, GithubMixin):
 
         self.redirect('/')
         #logging.error(user)
-        self.finish()
 
 
 

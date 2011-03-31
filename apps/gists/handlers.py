@@ -1,3 +1,4 @@
+import markdown
 from dateutil.parser import parse as date_parse
 import anyjson
 from pprint import pprint
@@ -40,8 +41,9 @@ class AddGistHandler(BaseHandler):
         gist.user = self.get_current_user()
         gist.save()
 
-        files = iter(gist.files)
-        self.fetch_files(gist, files)
+        self.redirect(self.reverse_url('view_gist', gist.gist_id))
+        #files = iter(gist.files)
+        #self.fetch_files(gist, files)
 
     def fetch_files(self, gist, files_iterator, response=None):
         if response is not None:
@@ -70,7 +72,43 @@ class GistHandler(BaseHandler):
         options = self.get_base_options()
         gist = self.find_gist(gist_id)
         options['gist'] = gist
+        options['edit'] = False
         self.render("gist.html", **options)
+
+@route(r'/(\d+)/edit/', name="edit_gist")
+class EditGistHandler(GistHandler):
+
+    @tornado.web.authenticated
+    def get(self, gist_id):
+        options = self.get_base_options()
+        gist = self.find_gist(gist_id)
+        if gist.user != options['user']:
+            raise tornado.web.HTTPError(403, "Not your gist")
+        options['gist'] = gist
+        options['edit'] = True
+        self.render("gist.html", **options)
+
+    @tornado.web.authenticated
+    def post(self, gist_id):
+        options = self.get_base_options()
+        gist = self.find_gist(gist_id)
+        if gist.user != options['user']:
+            raise tornado.web.HTTPError(403, "Not your gist")
+        description = self.get_argument('description').strip()
+        discussion = self.get_argument('discussion', u'')
+        try:
+            # test if the markdown plain text isn't broken
+            markdown.markdown(discussion, safe_mode="escape")
+        except Exception:
+            raise
+        gist.description = description
+        gist.discussion = discussion
+        gist.discussion_format = u'markdown'
+        gist.update_date = datetime.datetime.now()
+        gist.save()
+        url = self.reverse_url('view_gist', gist.gist_id)
+        self.redirect(url + '?edited=yay')
+
 
 @route(r'/(\d+)/delete/?', name="delete_gist")
 class GistHandler(GistHandler):

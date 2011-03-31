@@ -55,10 +55,6 @@ class Application(tornado.web.Application):
                     # most likely a builtin class or something
                     pass
 
-        if options.dont_combine:
-            ui_modules_map['Static'] = ui_modules_map['PlainStatic']
-            ui_modules_map['StaticURL'] = ui_modules_map['PlainStaticURL']
-
         try:
             cdn_prefix = [x.strip() for x in file('cdn_prefix.conf')
                              if x.strip() and not x.strip().startswith('#')][0]
