@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-  <title>Tornado Gists - explaining Tornado on gist at a time</title>
+  {% block title %}<title>Tornado Gists - explaining Tornado on gist at a time</title>{% end %}
   <link rel="shortcut icon" href="{{ static_url('images/favicon.ico') }}" type="image/x-icon" />
   <link rel="stylesheet" href="{{ static_url('css/base.css') }}">
   {% block extra_head %}
@@ -37,19 +37,22 @@
 
     {% end %}
     </div>
+    
+    <div id="footer">
+        &copy; TornadoGists.org, Developed by <a target="_blank" href="http://www.peterbe.com/">Peter Bengtsson</a>, 
+        Hosting sponsored by <a target="_blank" href="http://poweredsites.org/">Powered Sites</a>
+    </div>
 </div>
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.js"></script>
 <script>window.jQuery || document.write('<script src="js/libs/jquery-1.5.1.min.js">\x3C/script>')</script>
 
-  <!--
   <script>
-    var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']]; // Change UA-XXXXX-X to be your site's ID
+    var _gaq=[['_setAccount','UA-9694421-10'],['_trackPageview']]; // Change UA-XXXXX-X to be your site's ID
     (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];g.async=1;
     g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
     s.parentNode.insertBefore(g,s)}(document,'script'));
   </script>
-  -->
-
+  
 </body>
 </html>

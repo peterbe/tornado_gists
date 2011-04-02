@@ -5,7 +5,7 @@ from pprint import pprint
 import datetime
 import tornado.web
 from utils.routes import route, route_redirect
-from utils.gist_api import get_gist
+#from utils.gist_api import get_gist
 from apps.main.handlers import BaseHandler
 
 @route(r'/add/', name="add_gist")

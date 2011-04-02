@@ -1,5 +1,9 @@
 {% extends "base.html" %}
 
+{% block title %}
+<title>{{ gist.description }} | Tornado Gists</title>
+{% end %}
+
 {% block extra_head %}
 <style type="text/css">
 p.discussion { margin-top:1em; margin-bottom:0; }

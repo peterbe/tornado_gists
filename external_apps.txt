@@ -1,3 +1,4 @@
 mongokit
 python-dateutil
 markdown
+py-bcrypt
