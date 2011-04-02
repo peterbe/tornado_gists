@@ -12,10 +12,7 @@ import tornado.web
 import tornado.escape
 from utils.timesince import smartertimesince
 from subprocess import Popen, PIPE
-from utils import mkdir, format_time_ampm
 from utils.truncate import truncate_words
-
-
 
 class Footer(tornado.web.UIModule):
     def render(self, user=None):
