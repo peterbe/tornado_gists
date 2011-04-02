@@ -27,18 +27,9 @@ from tornado import httpclient
 
 # app
 from utils.routes import route, route_redirect
-from models import *
 from utils.send_mail import send_email
 from utils.decorators import login_required
-from utils import parse_datetime, niceboolean, \
-  DatetimeParseError, valid_email, random_string, \
-  all_hash_tags, all_atsign_tags, generate_random_color
 import settings
-
-
-from models import *
-
-
 
 class HTTPSMixin(object):
 
@@ -381,7 +372,7 @@ class GithubLoginHandler(BaseAuthHandler, GithubMixin):
 
     @tornado.web.asynchronous
     def get(self):
-        settings_ = settings.oauth_settings
+        settings_ = settings.OAUTH_SETTINGS
         if self.get_argument("code", False):
             self.get_authenticated_user(
                   redirect_uri=settings_['redirect_url'],
