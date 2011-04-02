@@ -25,3 +25,5 @@ twitter_consumer_secret
 *.old
 gkc.pem
 gists-db
+local_settings.py
+github_client_secret
