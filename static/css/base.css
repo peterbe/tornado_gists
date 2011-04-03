@@ -121,3 +121,8 @@ td {
   margin: 0;
   margin-bottom: 1em;
 }
+
+img.gravatar {
+  border:1px solid #d0d0d0;
+  padding:2px;
+}

@@ -44,3 +44,18 @@ class RenderText(tornado.web.UIModule):
             # plaintext
             html = '<p>%s</p>' % tornado.escape.linkify(text).replace('\n','<br>\n')
         return html
+
+class ShowGravatar(tornado.web.UIModule):
+    def render(self, gravatar_id, width_and_height=140, secure=False):
+        print "secure",
+        # this is how github does it
+        if self.handler.is_secure():
+            src = 'https://secure.gravatar.com/avatar/%s' % gravatar_id
+        else:
+            src = 'http://gravatar.com/avatar/%s' % gravatar_id
+        width = height = int(width_and_height)
+        src += '?s=%s' % width
+        src += '&d=https://d3nwyuy0nl342s.cloudfront.net%2Fimages%2Fgravat'\
+               'ars%2Fgravatar-140.png'
+        tmpl = '<img width="%s" height="%s" alt="" class="gravatar" src="%s"/>'
+        return tmpl % (width, height, src)

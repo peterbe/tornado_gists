@@ -32,13 +32,20 @@ div.discussion { margin:15px 10px; }
   <p><input type="submit" value="Save" /> <a href="{{ reverse_url('view_gist', gist.gist_id) }}">Cancel</a></p>
   </form>
 {% else %}
-  {% if gist.discussion %}
-  <div class="discussion">{{ modules.RenderText(gist.discussion, gist.discussion_format) }}</div>
-  {% end %}
   {% if user and gist.user == user %}
-  <p>Your gist, wanna <a onclick="return confirm('Are you sure you want to delete it entirely?')"
+  <p style="float:right">Your gist, wanna <a onclick="return confirm('Are you sure you want to delete it entirely?')"
   href="{{ reverse_url('delete_gist', gist.gist_id) }}">delete it</a> or
   <a href="{{ reverse_url('edit_gist', gist.gist_id) }}">edit it</a>?</p>
+  {% else %}
+  <p style="float:right">Added by <a href="{{ reverse_url('by_user', gist.user.login) }}">{{ gist.user.name }}</a>
+  {% if gist.user.gravatar_id %}
+  {{ modules.ShowGravatar(gist.user.gravatar_id, 30) }}
+  {% end %}
+  </p>
+  {% end %}
+
+  {% if gist.discussion %}
+  <div class="discussion">{{ modules.RenderText(gist.discussion, gist.discussion_format) }}</div>
   {% end %}
 {% end %}
 

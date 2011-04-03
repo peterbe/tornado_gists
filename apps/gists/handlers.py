@@ -22,8 +22,6 @@ class AddGistHandler(BaseHandler):
         http.fetch(url, callback=lambda r:self.on_gist_found(gist_id, r))
 
     def on_gist_found(self, gist_id, response):
-        print "RESPONSE.body"
-        print repr(response.body)
         gist_json = anyjson.deserialize(response.body)
         gist_info = gist_json['gists'][0]
         pprint(gist_info)
@@ -40,7 +38,7 @@ class AddGistHandler(BaseHandler):
         gist.user = self.get_current_user()
         gist.save()
 
-        self.redirect(self.reverse_url('view_gist', gist.gist_id))
+        self.redirect(self.reverse_url('edit_gist', gist.gist_id))
         #files = iter(gist.files)
         #self.fetch_files(gist, files)
 
@@ -58,8 +56,7 @@ class AddGistHandler(BaseHandler):
         except StopIteration:
             self.redirect(self.reverse_url('view_gist', gist.gist_id))
 
-
-@route(r'/(\d+)/?', name="view_gist")
+@route(r'/(\d+)/', name="view_gist")
 class GistHandler(BaseHandler):
     def find_gist(self, gist_id):
         try:
@@ -74,7 +71,7 @@ class GistHandler(BaseHandler):
         options['edit'] = False
         self.render("gist.html", **options)
 
-@route(r'/(\d+)/edit/', name="edit_gist")
+@route(r'/(\d+)/edit/$', name="edit_gist")
 class EditGistHandler(GistHandler):
 
     @tornado.web.authenticated
@@ -109,7 +106,7 @@ class EditGistHandler(GistHandler):
         self.redirect(url + '?edited=yay')
 
 
-@route(r'/(\d+)/delete/?', name="delete_gist")
+@route(r'/(\d+)/delete/$', name="delete_gist")
 class GistHandler(GistHandler):
 
     @tornado.web.authenticated
