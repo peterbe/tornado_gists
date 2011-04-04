@@ -8,10 +8,53 @@
 <style type="text/css">
 p.discussion { margin-top:1em; margin-bottom:0; }
 div.discussion { margin:15px 10px; }
+div.comment { border:1px solid #ccc; margin-bottom:15px; }
+div.comment p { padding:4px; margin: 0 !important;}
+div.comment p.metadata { background-color:#eaeaea; border-bottom:1px solid #ccc;  }
+p.metadata .gravatar { float:left; }
+p.metadata .user { padding-left:5px; font-weight:bold; }
+p.metadata .ago { padding-left:10px; }
 </style>
+
+<link rel="stylesheet" href="{{ static_url('css/ext/jquery.qtip.min.css') }}"/>
+<style type="text/css">
+.ui-tooltip {
+  max-width:760px;
+  min-width:600px;
+}
+#ui-tooltip-modal{
+   -moz-box-shadow: 0 0 10px 1px rgba(0,0,0,.5);
+   -webkit-box-shadow: 0 0 10px 1px rgba(0,0,0,.5);
+   box-shadow: 0 0 10px 1px rgba(0,0,0,.5);
+}
+
+#ui-tooltip-modal .ui-tooltip-content{
+   padding: 10px;
+}
+</style>
+
 {% end %}
 
 {% block main %}
+
+<div id="comment" style="display:none;width:500px">
+{% if user %}
+<form action="comments" method="post">
+<div style="display:hidden">{{ xsrf_form_html() }}
+<input type="hidden" name="file" value=""/>
+<input type="hidden" name="line" value=""/>
+<input type="hidden" name="reply_to" value=""/></div>
+<div><textarea name="comment" rows="5" cols="80"></textarea></div>
+<div id="preview_markdown" style="display:none">
+  <p style="font-weight:bold; background-color:#f1f1f1">Preview:</p>
+  <div id="_preview"></div>
+</div>
+<div><input type="submit" value="Post comment" /></div>
+</form>
+{% else %}
+<p><a href="/auth/github/">Must be logged in</a> to post comments. Takes 20 seconds.</p>
+{% end %}
+</div>
 
 {% if edit %}
 <form action="." method="post">{{ xsrf_form_html() }}
@@ -45,14 +88,26 @@ div.discussion { margin:15px 10px; }
   {% end %}
 
   {% if gist.discussion %}
+  <h3>Discussion</h3>
   <div class="discussion">{{ modules.RenderText(gist.discussion, gist.discussion_format) }}</div>
   {% end %}
 {% end %}
 
-
 {% for i, filename in enumerate(gist.files) %}
-<p>File: <code>{{ filename }}</code></p>
-<script src="https://gist.github.com/{{ gist.gist_id }}.js?file={{ filename }}"></script>
+  <p>File: <code>{{ filename }}</code></p>
+  <script src="https://gist.github.com/{{ gist.gist_id }}.js?file={{ filename }}"></script>
+  <a href="#" class="comment" data-file="{{ filename }}">Comment on this</a>
+  <div class="file-comments" style="display:none" data-file="{{ filename }}">
+    <h3>Comments</h3>
+  </div>
 {% end %}
 
+
+
 {% end %}<!-- end main block -->
+
+
+{% block extra_js %}
+<script src="{{ static_url('js/ext/jquery.qtip.min.js') }}"></script>
+<script src="{{ static_url('js/gist.js') }}"></script>
+{% end %}

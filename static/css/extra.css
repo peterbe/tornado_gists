@@ -1,0 +1,12 @@
+img.gravatar {
+  border:1px solid #d0d0d0;
+  padding:2px;
+}
+
+a.comment {
+  display:block;
+  float:right;
+  background-image: url(/static/images/comment.png);
+  background-repeat: no-repeat;
+  padding: 0 0 0 25px;
+}

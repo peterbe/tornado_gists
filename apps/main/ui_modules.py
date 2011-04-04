@@ -11,6 +11,7 @@ from tempfile import gettempdir
 import tornado.web
 import tornado.escape
 from utils.timesince import smartertimesince
+from utils import gravatar_html
 from subprocess import Popen, PIPE
 from utils.truncate import truncate_words
 
@@ -46,16 +47,5 @@ class RenderText(tornado.web.UIModule):
         return html
 
 class ShowGravatar(tornado.web.UIModule):
-    def render(self, gravatar_id, width_and_height=140, secure=False):
-        print "secure",
-        # this is how github does it
-        if self.handler.is_secure():
-            src = 'https://secure.gravatar.com/avatar/%s' % gravatar_id
-        else:
-            src = 'http://gravatar.com/avatar/%s' % gravatar_id
-        width = height = int(width_and_height)
-        src += '?s=%s' % width
-        src += '&d=https://d3nwyuy0nl342s.cloudfront.net%2Fimages%2Fgravat'\
-               'ars%2Fgravatar-140.png'
-        tmpl = '<img width="%s" height="%s" alt="" class="gravatar" src="%s"/>'
-        return tmpl % (width, height, src)
+    def render(self, gravatar_id, width_and_height=140):
+        return gravatar_html(self.handler.is_secure(), gravatar_id, width_and_height)

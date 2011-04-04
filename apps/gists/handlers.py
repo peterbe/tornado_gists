@@ -5,6 +5,8 @@ from pprint import pprint
 import datetime
 import tornado.web
 from utils.routes import route, route_redirect
+from utils.timesince import smartertimesince
+from utils import gravatar_html
 from apps.main.handlers import BaseHandler
 
 @route(r'/add/', name="add_gist")
@@ -24,7 +26,6 @@ class AddGistHandler(BaseHandler):
     def on_gist_found(self, gist_id, response):
         gist_json = anyjson.deserialize(response.body)
         gist_info = gist_json['gists'][0]
-        pprint(gist_info)
         gist = self.db.Gist()
         gist.gist_id = gist_id
         gist.description = unicode(gist_info.get('description', u''))
@@ -116,3 +117,61 @@ class GistHandler(GistHandler):
             raise tornado.web.HTTPError(403, "Not yours")
         gist.delete()
         self.redirect('/?gist=deleted')
+
+
+
+@route(r'/preview_markdown$')
+class PreviewMarkdownHandler(BaseHandler):
+    def check_xsrf_cookie(self):
+        pass
+
+    def post(self):
+        text = self.get_argument('text')
+        html = markdown.markdown(text, safe_mode="escape")
+        self.write_json(dict(html=html))
+
+
+@route(r'/(\d+)/comments', name="add_comment")
+class CommentsHandler(GistHandler):
+
+    def get(self, gist_id):
+
+        #sg = ShowGravatar(self)
+        gist = self.find_gist(gist_id)
+        comments = []
+        now = datetime.datetime.now()
+        for comment in self.db.Comment.find({'gist.$id': gist._id}).sort('add_date', 1):
+            #pprint(dict(comment.user))
+            comment_dict = dict(
+              comment=markdown.markdown(comment.comment, safe_mode='escape'),
+              ago=smartertimesince(comment.add_date, now),
+              file=comment.file,
+              id=str(comment._id),
+              user=dict(name=comment.user.name,
+                        login=comment.user.login,
+                        )
+            )
+            if comment.user.gravatar_id:
+                comment_dict['user']['gravatar_html'] = \
+                  gravatar_html(self.is_secure(), comment.user.gravatar_id, width_and_height=20)
+            #pprint(comment_dict)
+            comments.append(comment_dict)
+
+        self.write_json(dict(comments=comments))
+
+
+    def post(self, gist_id):
+        options = self.get_base_options()
+        gist = self.find_gist(gist_id)
+        comment = self.get_argument('comment')
+        file_ = self.get_argument('file')
+
+        c = self.db.Comment()
+        c.user = options['user']
+        c.gist = gist
+        c.comment = comment
+        c.comment_format = u'markdown'
+        c.file = file_
+        c.save()
+
+        self.redirect(self.reverse_url('view_gist', gist.gist_id) + "#comments")

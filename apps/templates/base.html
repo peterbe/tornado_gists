@@ -4,13 +4,14 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
   {% block title %}<title>Tornado Gists - explaining Tornado on gist at a time</title>{% end %}
   <link rel="shortcut icon" href="{{ static_url('images/favicon.ico') }}" type="image/x-icon" />
-  <link rel="stylesheet" href="{{ static_url('css/base.css') }}">
+  <link rel="stylesheet" href="{{ static_url('css/base.css') }}"/>
+  <link rel="stylesheet" href="{{ static_url('css/extra.css') }}"/>
   {% block extra_head %}
   {% end %}
 </head>
 <body>
 <div id="body">
-<div id="header">
+  <div id="header">
     <div id="login" style="float:right">
       <p>
       {% if user %}
@@ -22,37 +23,37 @@
       </p>
     </div>
 
-<table>
-<tr>
-<td class="logo"><a href="/"><img src="{{ static_url("images/tornado.png") }}" alt="Tornado"/></a></td>
-<td class="title"><h1>GISTS</h1></td>
-
-</tr>
-</table>
-</div>
-<div id="content">
+  <table>
+    <tr>
+      <td class="logo"><a href="/"><img src="{{ static_url("images/tornado.png") }}" alt="Tornado"/></a></td>
+      <td class="title"><h1>GISTS</h1></td>
+   </tr>
+  </table>
+  <div id="content">
 
     <div id="main">
     {% block main %}
 
     {% end %}
     </div>
-    
+
     <div id="footer">
-        &copy; TornadoGists.org, Developed by <a target="_blank" href="http://www.peterbe.com/">Peter Bengtsson</a>, 
+        &copy; TornadoGists.org, Developed by <a target="_blank" href="http://www.peterbe.com/">Peter Bengtsson</a>,
         Hosting sponsored by <a target="_blank" href="http://poweredsites.org/">Powered Sites</a>
     </div>
+  </div>
 </div>
 
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.js"></script>
-<script>window.jQuery || document.write('<script src="js/libs/jquery-1.5.1.min.js">\x3C/script>')</script>
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.js"></script>
+{% block extra_js %}
 
+{% end %}
   <script>
     var _gaq=[['_setAccount','UA-9694421-10'],['_trackPageview']]; // Change UA-XXXXX-X to be your site's ID
     (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];g.async=1;
     g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
     s.parentNode.insertBefore(g,s)}(document,'script'));
   </script>
-  
+
 </body>
 </html>
