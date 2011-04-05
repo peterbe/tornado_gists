@@ -36,8 +36,17 @@ var Comments = (function() {
 	 }
 	 $('<span>').addClass('user').html(comment.user.name).appendTo(m);
 	 $('<span>').addClass('ago').html(comment.ago + ' ago').appendTo(m);
+         /*
+         $('<a href="#">')
+           .addClass('comment')
+           .text("Reply to this")
+           .attr('data-file', comment.file)
+           .attr('data-id', comment.id)
+                   .appendTo(m);
+          */
 	 c.append(m);
 	 $('<div/>').html(comment.comment).appendTo(c);
+         $('<div/>').addClass('clearer').appendTo(c);
 	 container.append(c);
       }
    }
@@ -51,41 +60,40 @@ $(function() {
       Comments.load_comments(response.comments);
       Comments.display_all();
 
-   });
+      $('a.comment').each(function() {
+         var self = $(this);
+         self.qtip({
+   	 id: 'comment_qtip',
+   	 content: {
+   	    text: $('#comment'),
+   	      title: {
+   		 text: 'Comment',
+   		   button: true
+   	      }
+   	 },
+   	 position: {
+   	    my: 'center',
+   	      at: 'center',
+   	      target: $(window)
+   	 },
+   	 show: {
+   	    event: 'click',
+   	      solo: true,
+   	      modal: true
+   	 },
+   	 hide: false,
+   	 style: 'ui-tooltip-light ui-tooltip-rounded'
+         });
 
-   $('a.comment').each(function() {
-      var self = $(this);
-      self.qtip({
-	 id: 'comment_qtip',
-	 content: {
-	    text: $('#comment'),
-	      title: {
-		 text: 'Comment',
-		   button: true
-	      }
-	 },
-	 position: {
-	    my: 'center',
-	      at: 'center',
-	      target: $(window)
-	 },
-	 show: {
-	    event: 'click',
-	      solo: true,
-	      modal: true
-	 },
-	 hide: false,
-	 style: 'ui-tooltip-light ui-tooltip-rounded'
+         self.click(function() {
+            $('input[name="file"]').val(self.attr('data-file'));
+            $('#about-file code').text(self.attr('data-file'));
+            $('textarea[name="comment"]').keyup(_preview_comment_on_event);
+            $('textarea[name="comment"]').bind('change', _preview_comment_on_change);
+            return false;
+         });
+
       });
-
-      self.click(function() {
-         $('input[name="file"]').val(self.attr('data-file'));
-         $('#about-file code').text(self.attr('data-file'));
-         $('input[name="file"]').val(self.attr('data-file'));
-         $('textarea[name="comment"]').keyup(_preview_comment_on_event);
-         $('textarea[name="comment"]').bind('change', _preview_comment_on_change);
-      });
-
    });
 });
 

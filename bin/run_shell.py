@@ -35,8 +35,7 @@ if __name__ == '__main__':
 
     con.register(model_classes)
 
-
-    db = con.gkc
+    db = con[settings.DEFAULT_DATABASE_NAME]
     print "AVAILABLE:"
     print '\n'.join(['\t%s'%x for x in locals().keys()
                      if re.findall('[A-Z]\w+|db|con', x)])

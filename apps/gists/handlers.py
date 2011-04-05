@@ -194,7 +194,8 @@ class CommentsHandler(GistHandler):
         c.comment = comment
         c.comment_format = u'markdown'
         c.file = file_
-        print "FILE_", repr(file_)
         c.save()
 
-        self.redirect(self.reverse_url('view_gist', gist.gist_id) + "#comments")
+        url = self.reverse_url('view_gist', gist.gist_id)
+        anchor = gist.files.index(file_) + 1
+        self.redirect(url + "#comments-%s" % anchor)

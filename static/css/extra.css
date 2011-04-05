@@ -25,3 +25,5 @@ a.comment {
     /*top: 1px;*/
     z-index: 0;
 }
+
+div.clearer {clear: both; line-height: 0; height: 0;}
