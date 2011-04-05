@@ -1,9 +1,18 @@
 {% extends "base.html" %}
 
 {% block main %}
-<form action="/add/" method="post">
+<form action="/add/" method="post" class="add">
 {{ xsrf_form_html() }}
-<div>Github Gist ID: <input name="gist_id" value=""> <input type="submit" value="Add"></div>
+
+{% if not user %}
+<div id="login_to_add" style="display:none">
+  <p><strong>Sorry</strong>
+  You have to be <a href="/auth/github/">logged in</a> to add a gist and post comments.
+  </p>
+</div>
+{% end %}
+
+<div id="add_gist_id">Github Gist ID: <input name="gist_id" value=""> <input type="submit" value="Add"></div>
 </form>
 
 {% if by %}
@@ -19,4 +28,20 @@
     <a href="{{ reverse_url('by_user', gist.user.login) }}" class="user">{{ gist.user.name }}</a></li>
   {% end %}
 </ul>
+{% end %}
+
+{% block extra_js %}
+{% if not user %}
+<script type="text/javascript">
+$(function() {
+  $('form.add').submit(function() {
+    if ($('#login_to_add:hidden').size()) {
+      $('#login_to_add:hidden').show(500);
+      $('#add_gist_id').fadeTo(200, 0.2);
+    }
+    return false;
+  });
+});
+</script>
+{% end %}
 {% end %}

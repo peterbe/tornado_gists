@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}
+<title>Gist not found :( | Tornado Gists</title>
+{% end %}
+
+
+{% block main %}
+
+<h2>Gist not found</h2>
+
+{% if gist_id %}
+<p><strong>Sorry</strong><br>
+The gist you entered could not be found on github's API.<br>
+Does it work here?
+<a href="https://gist.github.com/{{ gist_id }}">https://gist.github.com/{{ gist_id }}</a>
+<br>
+<br>
+Please check that you entered it correctly. <a href="/">Try again</a>
+</p>
+
+{% end %}
+
+
+{% end %}<!-- end main block -->

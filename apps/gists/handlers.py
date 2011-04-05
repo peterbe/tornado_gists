@@ -9,6 +9,7 @@ from utils.timesince import smartertimesince
 from utils import gravatar_html
 from apps.main.handlers import BaseHandler
 
+
 @route(r'/add/', name="add_gist")
 class AddGistHandler(BaseHandler):
 
@@ -31,7 +32,9 @@ class AddGistHandler(BaseHandler):
         except KeyError:
             # TODO: redirect to a warning page
             # gist is not found
-            self.redirect("/")
+            url = self.reverse_url("gist_not_found")
+            url += '?gist_id=%s' % gist_id
+            self.redirect(url)
 
         gist = self.db.Gist()
         gist.gist_id = gist_id
@@ -63,6 +66,15 @@ class AddGistHandler(BaseHandler):
 
         except StopIteration:
             self.redirect(self.reverse_url('view_gist', gist.gist_id))
+
+@route(r'/notfound/', name="gist_not_found")
+class GistNotFoundHandler(BaseHandler):
+    @tornado.web.authenticated
+    def get(self):
+        options = self.get_base_options()
+        options['gist_id'] = self.get_argument('gist_id', None)
+        self.render("gist_not_found.html", **options)
+
 
 @route(r'/(\d+)/', name="view_gist")
 class GistHandler(BaseHandler):
