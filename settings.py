@@ -12,7 +12,7 @@ LOGIN_URL = "/auth/login/"
 COOKIE_SECRET = "Y2o1TzK2YQAGEYdkL5gmueJIFuY37EQm92XsTo1v/Wi="
 
 WEBMASTER = 'felinx.lee@gmail.com'
-ADMIN_EMAILS = ['felinx.lee@gmail.com']
+ADMIN_EMAILS = ['felinx.lee@gmail.com', 'peterbe@gmail.com']
 
 DEFAULT_DATABASE_NAME = 'tornadogists'
 
