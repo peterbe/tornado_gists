@@ -35,6 +35,7 @@ class Gist(BaseDocument):
         return _no_comments
 
 
+
 class Comment(BaseDocument):
     __collection__ = 'comments'
     structure = {
@@ -46,3 +47,9 @@ class Comment(BaseDocument):
       'line': int,
       'reply_to': ObjectId
     }
+
+    @property
+    def file_index_number(self):
+        if self.file:
+            return self.gist.files.index(self.file)
+        return 0

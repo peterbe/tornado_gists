@@ -12,7 +12,10 @@
 </div>
 {% end %}
 
-<div id="add_gist_id">Github Gist ID: <input name="gist_id" value=""> <input type="submit" value="Add"></div>
+<div id="add_gist_id" style="text-align:center;margin-top:15px">
+Github Gist ID: <input name="gist_id" value=""> <input type="submit" value="Add">
+| <a href="https://gist.github.com/">Create a new gist on Github</a> (then come back here)
+</div>
 </form>
 
 {% if by %}
@@ -32,6 +35,16 @@
     <a href="{{ reverse_url('by_user', gist.user.login) }}" class="user">{{ gist.user.name }}</a></li>
   {% end %}
 </ul>
+
+<h2>Recent comments</h2>
+<ul>
+  {% for comment in recent_comments %}
+  <li><a href="{{ reverse_url('view_gist', comment.gist.gist_id) }}#comments-{{ comment.file_index_number + 1 }}">{{ modules.TruncateWords(comment.comment, 10) }}</a>
+    by
+    <a href="{{ reverse_url('by_user', comment.gist.user.login) }}" class="user">{{ comment.gist.user.name }}</a></li>
+  {% end %}
+</ul>
+
 {% end %}
 
 {% block extra_js %}

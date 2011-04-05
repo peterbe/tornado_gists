@@ -236,11 +236,17 @@ class HomeHandler(BaseHandler):
         options = self.get_base_options()
         user = options['user']
         gists_search = {}
+        comment_search = {}
         if by is not None:
             gists_search = {'user.$id': by._id}
+            comment_search = {'user.$id': by._id}
         options['by'] = by
         options['gists'] = self.db.Gist.find(gists_search)\
           .sort('add_date', DESCENDING)
+
+        options['recent_comments'] = self.db.Comment.find(comment_search)\
+          .sort('add_date', DESCENDING).limit(20)
+
         self.render("home.html", **options)
 
 @route('/by/(\w+)', name="by_user")

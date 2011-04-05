@@ -34,3 +34,6 @@ def gravatar_html(is_secure, gravatar_id, width_and_height=140):
            'ars%2Fgravatar-140.png'
     tmpl = '<img width="%s" height="%s" alt="" class="gravatar" src="%s"/>'
     return tmpl % (width, height, src)
+
+def html_quote(text):
+    return text.replace('<','&lt').replace('>','&gt').replace('"','&quot;')

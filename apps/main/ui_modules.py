@@ -11,7 +11,7 @@ from tempfile import gettempdir
 import tornado.web
 import tornado.escape
 from utils.timesince import smartertimesince
-from utils import gravatar_html
+from utils import gravatar_html, html_quote
 from subprocess import Popen, PIPE
 from utils.truncate import truncate_words
 
@@ -24,7 +24,7 @@ class Footer(tornado.web.UIModule):
 
 class TruncateWords(tornado.web.UIModule):
     def render(self, string, max_words=20):
-        return truncate_words(string, max_words)
+        return html_quote(truncate_words(string, max_words))
 
 class TruncateString(tornado.web.UIModule):
     def render(self, string, max_length=30):
