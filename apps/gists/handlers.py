@@ -25,10 +25,10 @@ class AddGistHandler(BaseHandler):
         http.fetch(url, callback=lambda r:self.on_gist_found(gist_id, r))
 
     def on_gist_found(self, gist_id, response):
-        gist_json = anyjson.deserialize(response.body)
-
+        gist_struct = anyjson.deserialize(response.body)
+        #pprint(gist_struct)
         try:
-            gist_info = gist_json['gists'][0]
+            gist_info = gist_struct['gists'][0]
         except KeyError:
             # TODO: redirect to a warning page
             # gist is not found
@@ -194,6 +194,7 @@ class CommentsHandler(GistHandler):
         c.comment = comment
         c.comment_format = u'markdown'
         c.file = file_
+        print "FILE_", repr(file_)
         c.save()
 
         self.redirect(self.reverse_url('view_gist', gist.gist_id) + "#comments")

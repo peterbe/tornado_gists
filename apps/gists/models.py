@@ -26,6 +26,14 @@ class Gist(BaseDocument):
       'discussion_format': u'markdown',
     }
 
+    @property
+    def no_comments(self):
+        _no_comments = getattr(self, '_no_comments', None)
+        if _no_comments is None:
+            _no_comments = self.db.Comment.find({'gist.$id':self._id}).count()
+            self._no_comments = _no_comments
+        return _no_comments
+
 
 class Comment(BaseDocument):
     __collection__ = 'comments'

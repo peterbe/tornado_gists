@@ -50,11 +50,12 @@ $(function() {
       }
       Comments.load_comments(response.comments);
       Comments.display_all();
-      
+
    });
-   
+
    $('a.comment').each(function() {
-      $(this).qtip({
+      var self = $(this);
+      self.qtip({
 	 id: 'comment_qtip',
 	 content: {
 	    text: $('#comment'),
@@ -76,16 +77,36 @@ $(function() {
 	 hide: false,
 	 style: 'ui-tooltip-light ui-tooltip-rounded'
       });
-      $('input[name="file"]').val($(this).attr('data-file'));
-      $('textarea[name="comment"]').keyup(_preview_comment_on_event);
+
+      self.click(function() {
+         $('input[name="file"]').val(self.attr('data-file'));
+         $('#about-file code').text(self.attr('data-file'));
+         $('input[name="file"]').val(self.attr('data-file'));
+         $('textarea[name="comment"]').keyup(_preview_comment_on_event);
+         $('textarea[name="comment"]').bind('change', _preview_comment_on_change);
+      });
+
    });
 });
+
+function _preview_comment_on_change() {
+   $('textarea[name="comment"]').unbind('change');
+   _preview_comment(function(err) {
+      if (!err) {
+         // reattach
+         $('textarea[name="comment"]').bind('change', _preview_comment_on_change);
+      }
+   });
+}
 
 function _preview_comment_on_event(event) {
    if (event.keyCode===13) {
       $('textarea[name="comment"]').unbind('keyup');
-      _preview_comment(function() {
-	 $('textarea[name="comment"]').keyup(_preview_comment_on_event);
+      _preview_comment(function(err) {
+         if (!err) {
+            // reattach
+            $('textarea[name="comment"]').keyup(_preview_comment_on_event);
+         }
       });
    }
 }

@@ -14,6 +14,7 @@ div.comment p.metadata { background-color:#eaeaea; border-bottom:1px solid #ccc;
 p.metadata .gravatar { float:left; }
 p.metadata .user { padding-left:5px; font-weight:bold; }
 p.metadata .ago { padding-left:10px; }
+.gist-file { margin-top:20px; }
 </style>
 
 <link rel="stylesheet" href="{{ static_url('css/ext/jquery.qtip.min.css') }}"/>
@@ -41,7 +42,7 @@ p.metadata .ago { padding-left:10px; }
 {% if user %}
 <form action="comments" method="post">
 <div style="display:hidden">{{ xsrf_form_html() }}
-<input type="hidden" name="file" value=""/>
+<input type="hidden" name="file" value="" />
 <input type="hidden" name="line" value=""/>
 <input type="hidden" name="reply_to" value=""/></div>
 <div><textarea name="comment" rows="5" cols="80"></textarea></div>
@@ -49,10 +50,14 @@ p.metadata .ago { padding-left:10px; }
   <p style="font-weight:bold; background-color:#f1f1f1">Preview:</p>
   <div id="_preview"></div>
 </div>
-<div><input type="submit" value="Post comment" /></div>
+<div><input type="submit" value="Post comment" />
+
+<span class="metadata" id="about-file">regarding <code></code></span>
+
+</div>
 </form>
 {% else %}
-<p><a href="/auth/github/">Must be logged in</a> to post comments. Takes 20 seconds.</p>
+<p><a href="/auth/github/">Must be logged in</a> to post comments. Takes 4 seconds.</p>
 {% end %}
 </div>
 
@@ -80,7 +85,9 @@ p.metadata .ago { padding-left:10px; }
   href="{{ reverse_url('delete_gist', gist.gist_id) }}">delete it</a> or
   <a href="{{ reverse_url('edit_gist', gist.gist_id) }}">edit it</a>?</p>
   {% else %}
-  <p style="float:right">Added by <a href="{{ reverse_url('by_user', gist.user.login) }}">{{ gist.user.name }}</a>
+  <p style="float:right">Added
+  {{ modules.TimeSince(gist.add_date) }} ago
+  by <a href="{{ reverse_url('by_user', gist.user.login) }}">{{ gist.user.name }}</a>
   {% if gist.user.gravatar_id %}
   {{ modules.ShowGravatar(gist.user.gravatar_id, 30) }}
   {% end %}
@@ -91,15 +98,29 @@ p.metadata .ago { padding-left:10px; }
   <h3>Discussion</h3>
   <div class="discussion">{{ modules.RenderText(gist.discussion, gist.discussion_format) }}</div>
   {% end %}
+  <div>
+
+    {% if gist.owner == gist.user.login %}
+    {% else %}
+    <p>Originally created
+    {% if gist.owner %}
+    by <a href="https://github.com/{{ gist.owner }}">{{ gist.owner }}</a>
+    {% end %}
+    {{ gist.created_at }}
+    </p>
+    {% end %}
+  </div>
 {% end %}
 
 {% for i, filename in enumerate(gist.files) %}
+<div class="gist-file">
   <p>File: <code>{{ filename }}</code></p>
   <script src="https://gist.github.com/{{ gist.gist_id }}.js?file={{ filename }}"></script>
   <a href="#" class="comment" data-file="{{ filename }}">Comment on this</a>
   <div class="file-comments" style="display:none" data-file="{{ filename }}">
     <h3>Comments</h3>
   </div>
+</div>
 {% end %}
 
 

@@ -24,7 +24,11 @@
 <ul>
   {% for gist in gists %}
     <li><a href="{{ reverse_url('view_gist', gist.gist_id) }}">{{ gist.gist_id }},
-    <span class="description">{{ gist.description }}</span></a> by
+    <span class="description">{{ gist.description }}</span></a>
+    {% if gist.no_comments %}
+    <abbr title="{{ gist.no_comments }} comments" class="comment-count">{{ gist.no_comments }}</abbr>
+    {% end %}
+    by
     <a href="{{ reverse_url('by_user', gist.user.login) }}" class="user">{{ gist.user.name }}</a></li>
   {% end %}
 </ul>
