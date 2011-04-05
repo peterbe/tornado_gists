@@ -25,7 +25,14 @@ class AddGistHandler(BaseHandler):
 
     def on_gist_found(self, gist_id, response):
         gist_json = anyjson.deserialize(response.body)
-        gist_info = gist_json['gists'][0]
+
+        try:
+            gist_info = gist_json['gists'][0]
+        except KeyError:
+            # TODO: redirect to a warning page
+            # gist is not found
+            self.redirect("/")
+
         gist = self.db.Gist()
         gist.gist_id = gist_id
         gist.description = unicode(gist_info.get('description', u''))
@@ -91,8 +98,12 @@ class EditGistHandler(GistHandler):
         gist = self.find_gist(gist_id)
         if gist.user != options['user']:
             raise tornado.web.HTTPError(403, "Not your gist")
-        description = self.get_argument('description').strip()
+
+        # fix 404 error if no description be posted
+        # use gist_id as default description
+        description = self.get_argument('description', u'GIST-%s' % gist_id).strip()
         discussion = self.get_argument('discussion', u'')
+
         try:
             # test if the markdown plain text isn't broken
             markdown.markdown(discussion, safe_mode="escape")
@@ -108,7 +119,7 @@ class EditGistHandler(GistHandler):
 
 
 @route(r'/(\d+)/delete/$', name="delete_gist")
-class GistHandler(GistHandler):
+class DeleteGistHandler(GistHandler):
 
     @tornado.web.authenticated
     def get(self, gist_id):
@@ -117,7 +128,6 @@ class GistHandler(GistHandler):
             raise tornado.web.HTTPError(403, "Not yours")
         gist.delete()
         self.redirect('/?gist=deleted')
-
 
 
 @route(r'/preview_markdown$')
