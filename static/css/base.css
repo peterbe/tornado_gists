@@ -122,3 +122,7 @@ td {
   margin: 0;
   margin-bottom: 1em;
 }
+
+.hidden {
+    display:none;
+}

@@ -15,6 +15,7 @@ p.metadata .gravatar { float:left; }
 p.metadata .user { padding-left:5px; font-weight:bold; }
 p.metadata .ago { padding-left:10px; }
 .gist-file { margin-top:20px; }
+#comment-link-end { padding-bottom:15px; }
 </style>
 
 <link rel="stylesheet" href="{{ static_url('css/ext/jquery.qtip.min.css') }}"/>
@@ -117,10 +118,16 @@ p.metadata .ago { padding-left:10px; }
 <div class="gist-file">
   <p>File: <code>{{ filename }}</code></p>
   <script src="https://gist.github.com/{{ gist.gist_id }}.js?file={{ filename }}"></script>
-  <a href="#" class="comment" data-file="{{ filename }}">Comment on this</a>
-  <a name="comments-{{ i+1 }}"></a>
+  <div id="comment-link-front">
+      <a href="#" class="comment" data-file="{{ filename }}">Comment on this</a>
+      <a name="comments-{{ i+1 }}"></a>
+  </div>
   <div class="file-comments" style="display:none" data-file="{{ filename }}">
     <h3>Comments</h3>
+  </div>
+  <div id="comment-link-end" class="hidden">
+      <a href="#" class="comment" data-file="{{ filename }}">Comment on this</a>
+      <a name="comments-{{ i+1 }}"></a>
   </div>
 </div>
 {% end %}
