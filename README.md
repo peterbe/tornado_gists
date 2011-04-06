@@ -18,5 +18,5 @@ It's by no means perfect and absolutely not the ideal way of writing a
 Tornado app (because there is no such way). 
 
 To run the code you simply need a MongoDB (of a recentish version) and
-install MongoKit which clues MongoDB to Tornado. 
+install MongoKit which glues MongoDB to Tornado.
 
