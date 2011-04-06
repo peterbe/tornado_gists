@@ -1,5 +1,11 @@
 {% extends "base.html" %}
 
+{% block extra_head %}
+<style type="text/css">
+#content h2 { margin-top:24pt; }
+</style>
+{% end %}
+
 {% block main %}
 <form action="/add/" method="post" class="add">
 {{ xsrf_form_html() }}
@@ -19,11 +25,28 @@ Github Gist ID: <input name="gist_id" value=""> <input type="submit" value="Add"
 </form>
 
 {% if by %}
-<h2>{{ by.name }}'s gists</h2>
+<h2>{{ by.name }}'s gists  <span class="count">({{ count_gists }})</span></h2>
 <p><a href="{{ reverse_url('home') }}">clear search</a></p>
 {% else %}
-<h2>Current gists</h2>
+<h2>Gists <span class="count">({{ count_gists }})</span></h2>
 {% end %}
+
+{% if your_gists_count %}
+<h3>Your gists <span class="count">({{ your_gists_count }})</span></h3>
+<ul>
+  {% for gist in your_gists %}
+    <li><a href="{{ reverse_url('view_gist', gist.gist_id) }}">{{ gist.gist_id }},
+    <span class="description">{{ gist.description }}</span></a>
+    {% if gist.no_comments %}
+    <abbr title="{{ gist.no_comments }} comments" class="comment-count">{{ gist.no_comments }}</abbr>
+    {% end %}
+    by
+    <a href="{{ reverse_url('by_user', gist.user.login) }}" class="user">{{ gist.user.name }}</a></li>
+  {% end %}
+</ul>
+{% end %}
+
+<h3>Recent gists</h3>
 <ul>
   {% for gist in gists %}
     <li><a href="{{ reverse_url('view_gist', gist.gist_id) }}">{{ gist.gist_id }},
@@ -36,12 +59,25 @@ Github Gist ID: <input name="gist_id" value=""> <input type="submit" value="Add"
   {% end %}
 </ul>
 
-<h2>Recent comments</h2>
+<h2>Comments <span class="count">({{ count_comments }})</span></h2>
+
+{% if recent_comments_your_gists_count %}
+<h3>Recent comments to your gists</h3>
+<ul>
+  {% for comment in recent_comments_your_gists %}
+  <li><a href="{{ reverse_url('view_gist', comment.gist.gist_id) }}#comments-{{ comment.file_index_number + 1 }}">{{ modules.TruncateWords(comment.comment, 10) }}</a>
+    by
+    <a href="{{ reverse_url('by_user', comment.user.login) }}" class="user">{{ comment.user.name }}</a></li>
+  {% end %}
+</ul>
+{% end %}
+
+<h3>Recent comments</h3>
 <ul>
   {% for comment in recent_comments %}
   <li><a href="{{ reverse_url('view_gist', comment.gist.gist_id) }}#comments-{{ comment.file_index_number + 1 }}">{{ modules.TruncateWords(comment.comment, 10) }}</a>
     by
-    <a href="{{ reverse_url('by_user', comment.gist.user.login) }}" class="user">{{ comment.gist.user.name }}</a></li>
+    <a href="{{ reverse_url('by_user', comment.user.login) }}" class="user">{{ comment.user.name }}</a></li>
   {% end %}
 </ul>
 

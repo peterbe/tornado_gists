@@ -237,15 +237,40 @@ class HomeHandler(BaseHandler):
         user = options['user']
         gists_search = {}
         comment_search = {}
+
+        options['your_gists_count'] = 0
+        options['your_gists'] = []
+        options['recent_comments_your_gists_count'] = 0
+        options['recent_comments_your_gists'] = []
+
         if by is not None:
             gists_search = {'user.$id': by._id}
             comment_search = {'user.$id': by._id}
+        elif options['user']:
+            _ids = [x._id for x in
+                    self.db.Gist.find({'user.$id': options['user']._id})]
+            your_comment_search = {'gist.$id':{'$in':_ids}}
+            options['recent_comments_your_gists_count'] = \
+              self.db.Comment.find(your_comment_search).count()
+            options['recent_comments_your_gists'] = \
+              self.db.Comment.find(your_comment_search)\
+                .sort('add_date', DESCENDING).limit(20)
+
+            options['your_gists_count'] = \
+              self.db.Gist.find({'user.$id': options['user']._id}).count()
+            options['your_gists'] = \
+              self.db.Gist.find({'user.$id': options['user']._id})\
+                .sort('add_date', DESCENDING).limit(20)
+
         options['by'] = by
+        options['count_gists'] = self.db.Gist.find(gists_search).count()
         options['gists'] = self.db.Gist.find(gists_search)\
           .sort('add_date', DESCENDING)
 
+        options['count_comments'] = self.db.Comment.find(comment_search).count()
         options['recent_comments'] = self.db.Comment.find(comment_search)\
           .sort('add_date', DESCENDING).limit(20)
+
 
         self.render("home.html", **options)
 
