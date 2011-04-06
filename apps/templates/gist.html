@@ -117,18 +117,17 @@ p.metadata .ago { padding-left:10px; }
 {% for i, filename in enumerate(gist.files) %}
 <div class="gist-file">
   <p>File: <code>{{ filename }}</code></p>
-  <script src="https://gist.github.com/{{ gist.gist_id }}.js?file={{ filename }}"></script>
-  <div id="comment-link-front">
+  <script type="text/javascript" src="https://gist.github.com/{{ gist.gist_id }}.js?file={{ filename }}"></script>
+  <div class="comment-link-front">
       <a href="#" class="comment" data-file="{{ filename }}">Comment on this</a>
-      <a name="comments-{{ i+1 }}"></a>
   </div>
+  <a name="comments-{{ i+1 }}"></a>
   <div class="file-comments" style="display:none" data-file="{{ filename }}">
     <h3>Comments</h3>
   </div>
-  <div id="comment-link-end" class="hidden">
+  <div class="comment-link-bottom" style="display:none">
       <a href="#" class="comment" data-file="{{ filename }}">Comment on this</a>
-      <a name="comments-{{ i+1 }}"></a>
-  </div>
+  </div>  
 </div>
 {% end %}
 
@@ -138,6 +137,6 @@ p.metadata .ago { padding-left:10px; }
 
 
 {% block extra_js %}
-<script src="{{ static_url('js/ext/jquery.qtip.min.js') }}"></script>
-<script src="{{ static_url('js/gist.js') }}"></script>
+<script type="text/javascript" src="{{ static_url('js/ext/jquery.qtip.min.js') }}"></script>
+<script type="text/javascript" src="{{ static_url('js/gist.js') }}"></script>
 {% end %}
