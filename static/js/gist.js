@@ -62,43 +62,48 @@ $(function() {
       Comments.load_comments(response.comments);
       Comments.display_all();
 
-      $('a.comment').each(
-         function() {
-            var self = $(this);
-            self.qtip( {
-               id : 'comment_qtip',
-               content : {
-                  text : $('#comment'),
-                  title : {
-                     text : 'Comment',
-                     button : true
-                  }
-               },
-               position : {
-                  my : 'center',
-                  at : 'center',
-                  target : $(window)
-               },
-               show : {
-                  event : 'click',
-                  solo : true,
-                  modal : true
-               },
-               hide : false,
-               style : 'ui-tooltip-light ui-tooltip-rounded'
-            });
-
-            self.click(function() {                  
-               $('input[name="file"]').val(self.attr('data-file'));
-               $('#about-file code').text(self.attr('data-file'));
-               $('textarea[name="comment"]').keyup(
-                     _preview_comment_on_event);
-               $('textarea[name="comment"]').bind('change',
-                     _preview_comment_on_change);
-               return false;
-            });
-
-         });
+      $('a.comment').each(function() {
+	 var self = $(this);
+	 self.qtip( {
+	    //id : 'comment_qtip',
+	    content : {
+	       text : $('#comment-outer .comment-inner'),
+		 title : {
+		    text : 'Comment',
+		      button : true
+		 }
+	    },
+	    position : {
+	       my : 'center',
+		 at : 'center',
+		 target : $(window)
+	    },
+	    show : {
+	       event : 'click',
+		 solo : true,
+		 modal : true
+	    },
+	    events : {
+	       hide : function(event, api) {
+		  //$('#ui-tooltip-comment_qtip').remove();
+		  //$('.qtip:hidden').remove();
+	       }
+	    },
+	    hide : false,
+	    style : 'ui-tooltip-light ui-tooltip-rounded'
+	 });
+	 
+	 self.click(function() {
+	    $('textarea[name="comment"]')
+	      .keyup(_preview_comment_on_event);
+	    $('textarea[name="comment"]')
+	      .bind('change', _preview_comment_on_change);
+	    $('input[name="file"]').val(self.attr('data-file'));
+	    $('.about-file code').text(self.attr('data-file'));
+	    return false;
+	 });
+	 
+      });
    });
 });
 
@@ -107,8 +112,8 @@ function _preview_comment_on_change() {
    _preview_comment(function(err) {
       if (!err) {
          // reattach
-         $('textarea[name="comment"]').bind('change',
-               _preview_comment_on_change);
+         $('textarea[name="comment"]')
+	   .bind('change',_preview_comment_on_change);
       }
    });
 }
@@ -119,7 +124,8 @@ function _preview_comment_on_event(event) {
       _preview_comment(function(err) {
          if (!err) {
             // reattach
-            $('textarea[name="comment"]').keyup(_preview_comment_on_event);
+            $('textarea[name="comment"]')
+	      .keyup(_preview_comment_on_event);
          }
       });
    }
@@ -135,10 +141,10 @@ function _preview_comment(callback) {
       },
       success : function(res) {
          if (res.html) {
-            if ($('#preview_markdown:hidden').size()) {
-               $('#preview_markdown').show();
+            if ($('.preview_markdown:hidden').size()) {
+               $('.preview_markdown').show();
             }
-            $('#_preview').html(res.html)
+            $('._preview').html(res.html)
          }
          callback(null, res.html);
       }

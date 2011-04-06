@@ -39,29 +39,30 @@ p.metadata .ago { padding-left:10px; }
 
 {% block main %}
 
-<div id="comment" style="display:none;width:500px">
-{% if user %}
-<form action="comments" method="post">
-<div style="display:hidden">{{ xsrf_form_html() }}
-<input type="hidden" name="file" value="" />
-<input type="hidden" name="line" value=""/>
-<input type="hidden" name="reply_to" value=""/>
-</div>
-<div><textarea name="comment" rows="5" cols="80"></textarea></div>
-<div id="preview_markdown" style="display:none">
-  <p style="font-weight:bold; background-color:#f1f1f1">Preview:</p>
-  <div id="_preview"></div>
-</div>
-<div><input type="submit" value="Post comment" />
 
-<span class="metadata" id="about-file">regarding <code></code></span>
-
-</div>
-</form>
-{% else %}
-<p><a href="/auth/github/">Must be logged in</a> to post comments. Takes 4 seconds.</p>
-{% end %}
-</div>
+<div id="comment-outer" style="display:none">
+  <div class="comment-inner" style="width:500px">
+  {% if user %}
+  <form action="comments" method="post">
+  <div style="display:hidden">{{ xsrf_form_html() }}
+  <input type="hidden" name="file" value="" />
+  <input type="hidden" name="line" value=""/>
+  <input type="hidden" name="reply_to" value=""/>
+  </div>
+  <div><textarea name="comment" rows="5" cols="80"></textarea></div>
+  <div class="preview_markdown" style="display:none">
+    <p style="font-weight:bold; background-color:#f1f1f1">Preview:</p>
+    <div class="_preview"></div>
+  </div>
+  <div><input type="submit" value="Post comment" />
+  <span class="metadata about-file">regarding <code></code></span>
+  </div>
+  </form>
+  {% else %}
+  <p><a href="/auth/github/">Must be logged in</a> to post comments. Takes 4 seconds.</p>
+  {% end %}
+  </div><!-- /.comment-inner -->
+</div><!-- /.comment-outer -->
 
 {% if edit %}
 <form action="." method="post">{{ xsrf_form_html() }}
@@ -127,7 +128,9 @@ p.metadata .ago { padding-left:10px; }
   </div>
   <div class="comment-link-bottom" style="display:none">
       <a href="#" class="comment" data-file="{{ filename }}">Comment on this</a>
-  </div>  
+  </div>
+  
+  
 </div>
 {% end %}
 
