@@ -138,6 +138,11 @@ class DeleteGistHandler(GistHandler):
         gist = self.find_gist(gist_id)
         if gist.user != self.get_current_user():
             raise tornado.web.HTTPError(403, "Not yours")
+
+        # delete all comments of this gist
+        for comment in self.db.Comment.find({'gist.$id': gist._id}):
+            comment.delete()
+
         gist.delete()
         self.redirect('/?gist=deleted')
 
