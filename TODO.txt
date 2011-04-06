@@ -1,5 +1,7 @@
+* TESTS!
 
-* Ability to add a gist
+* commenting on lines of code
 
-* Here's how to display gravatars
-https://secure.gravatar.com/avatar/23c6d359b6f7af3d3f91ca9e17b804b3?s=140&d=https://d3nwyuy0nl342s.cloudfront.net%2Fimages%2Fgravatars%2Fgravatar-140.png
+* Comments in HTML instead of AJAX (SEO)
+
+* Ability to tag gists
