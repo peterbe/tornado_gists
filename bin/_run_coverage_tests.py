@@ -8,13 +8,8 @@ COVERAGE_MODULES = [
     'app',
     'apps.main.models',
     'apps.main.handlers',
-    'apps.main.ui_modules',
-    #'apps.smartphone.handlers',
-    'utils',
-    'apps.emailreminders.models',
-    'apps.emailreminders.handlers',
-    'apps.emailreminders.reminder_utils',
-    'apps.emailreminders.ui_modules',
+    'apps.gists.models',
+    'apps.gists.handlers',
 ]
 
 def all():
@@ -22,18 +17,18 @@ def all():
 
 if __name__ == '__main__':
     import tornado.testing
-    
+
     cov = coverage.coverage()
     cov.use_cache(0) # Do not cache any of the coverage.py stuff
     cov.start()
-    
+
     try:
         tornado.testing.main()
     except SystemExit, e:
         if e.code:
             # go ahead and raise the exit :(
             raise
-        
+
     cov.stop()
     print ''
     print '----------------------------------------------------------------------'
@@ -48,6 +43,3 @@ if __name__ == '__main__':
     cov.html_report(coverage_modules, directory='coverage_report')
     # Print code metrics footer
     print '----------------------------------------------------------------------'
-    
-
-    

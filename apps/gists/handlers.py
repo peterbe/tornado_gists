@@ -53,7 +53,9 @@ class AddGistHandler(BaseHandler):
         #files = iter(gist.files)
         #self.fetch_files(gist, files)
 
-    def fetch_files(self, gist, files_iterator, response=None):
+    def fetch_files(self, gist, files_iterator, response=None): # pragma: no cover
+        # don't think we need this any more
+        # Might be good one day for full text indexing search or something
         if response is not None:
             gist.contents.append(unicode(response.body))
             gist.save()
@@ -80,13 +82,16 @@ class GistNotFoundHandler(BaseHandler):
 class GistHandler(BaseHandler):
     def find_gist(self, gist_id):
         try:
-            return self.db.Gist.one({'gist_id': int(gist_id)})
+            gist = self.db.Gist.one({'gist_id': int(gist_id)})
+            assert gist
+            return gist
         except (ValueError, AssertionError):
             raise tornado.web.HTTPError(404, "Gist not found")
 
     def get(self, gist_id):
         options = self.get_base_options()
         gist = self.find_gist(gist_id)
+        assert gist.gist_id == int(gist_id)
         options['gist'] = gist
         options['edit'] = False
         self.render("gist.html", **options)
@@ -147,7 +152,7 @@ class DeleteGistHandler(GistHandler):
         self.redirect('/?gist=deleted')
 
 
-@route(r'/preview_markdown$')
+@route(r'/preview_markdown$', name="preview_markdown")
 class PreviewMarkdownHandler(BaseHandler):
     def check_xsrf_cookie(self):
         pass
@@ -158,7 +163,7 @@ class PreviewMarkdownHandler(BaseHandler):
         self.write_json(dict(html=html))
 
 
-@route(r'/(\d+)/comments', name="add_comment")
+@route(r'/(\d+)/comments', name="comments")
 class CommentsHandler(GistHandler):
 
     def get(self, gist_id):
@@ -186,7 +191,7 @@ class CommentsHandler(GistHandler):
 
         self.write_json(dict(comments=comments))
 
-
+    @tornado.web.authenticated
     def post(self, gist_id):
         options = self.get_base_options()
         gist = self.find_gist(gist_id)

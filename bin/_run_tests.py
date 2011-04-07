@@ -8,8 +8,8 @@ import unittest
 TEST_MODULES = [
     'apps.main.tests.test_handlers',
     'apps.main.tests.test_models',
-    #'apps.gists.tests.test_handlers',
-    #'apps.gists.tests.test_models',
+    'apps.gists.tests.test_handlers',
+    'apps.gists.tests.test_models',
 ]
 
 def all():

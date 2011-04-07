@@ -22,7 +22,7 @@ from pymongo import ASCENDING, DESCENDING
 
 try:
     import pyatom
-except ImportError:
+except ImportError: # pragma: no cover
     import warnings
     warnings.warn("pyatom not installed (pip install pyatom)")
     pyatom = None
@@ -39,26 +39,17 @@ from utils.send_mail import send_email
 from utils.decorators import login_required
 import settings
 
-class HTTPSMixin(object):
 
-    def is_secure(self):
-        # XXX is this really the best/only way?
-        return self.request.headers.get('X-Scheme') == 'https'
-
-    def httpify_url(self):
-        return self.request.full_url().replace('https://', 'http://')
-
-    def httpsify_url(self):
-        return self.request.full_url().replace('http://', 'https://')
-
-
-class BaseHandler(tornado.web.RequestHandler, HTTPSMixin):
+class BaseHandler(tornado.web.RequestHandler):
 
     @property
     def db(self):
         return self.application.con[self.application.database_name]
 
-    def xxx_handle_request_exception(self, exception):
+    def is_secure(self):
+        return self.request.headers.get('X-Scheme') == 'https'
+
+    def xxx_handle_request_exception(self, exception): # pragma: no cover
         if not isinstance(exception, tornado.web.HTTPError) and \
           not self.application.settings['debug']:
             # ie. a 500 error
@@ -73,20 +64,6 @@ class BaseHandler(tornado.web.RequestHandler, HTTPSMixin):
             print "Exception!"
             print exception
         super(BaseHandler, self)._handle_request_exception(exception)
-
-    def xxx_log(self):
-        """overwritten from tornado.web.RequestHandler because we want to put
-        all requests as logging.debug and keep all normal logging.info()"""
-        if self._status_code < 400:
-            #log_method = logging.info
-            log_method = logging.debug
-        elif self._status_code < 500:
-            log_method = logging.warning
-        else:
-            log_method = logging.error
-        request_time = 1000.0 * self.request.request_time()
-        log_method("%d %s %.2fms", self._status_code,
-                   self._request_summary(), request_time)
 
 
     def _email_exception(self, exception): # pragma: no cover
@@ -142,30 +119,6 @@ class BaseHandler(tornado.web.RequestHandler, HTTPSMixin):
         if user_id:
             return self.db.User.one({'_id': ObjectId(user_id)})
 
-    # shortcut where the user parameter is not optional
-    def get_user_settings(self, user, fast=False):
-        return self.get_current_user_settings(user=user, fast=fast)
-
-    def get_current_user_settings(self, user=None, fast=False):
-        if user is None:
-            user = self.get_current_user()
-
-        if not user:
-            raise ValueError("Can't get settings when there is no user")
-        _search = {'user.$id': user['_id']}
-        if fast:
-            return self.db[UserSettings.__collection__].one(_search) # skip mongokit
-        else:
-            return self.db.UserSettings.one(_search)
-
-    def create_user_settings(self, user, **default_settings):
-        user_settings = self.db.UserSettings()
-        user_settings.user = user
-        for key in default_settings:
-            setattr(user_settings, key, default_settings[key])
-        user_settings.save()
-        return user_settings
-
     def get_cdn_prefix(self):
         """return something that can be put in front of the static filename
         E.g. if filename is '/static/image.png' and you return '//cloudfront.com'
@@ -175,29 +128,8 @@ class BaseHandler(tornado.web.RequestHandler, HTTPSMixin):
         return self.application.settings.get('cdn_prefix')
 
     def write_json(self, struct, javascript=False):
-        if javascript:
-            self.set_header("Content-Type", "text/javascript; charset=UTF-8")
-        else:
-            self.set_header("Content-Type", "application/json; charset=UTF-8")
+        self.set_header("Content-Type", "application/json; charset=UTF-8")
         self.write(tornado.escape.json_encode(struct))
-
-
-    def serialize_dict(self, data):
-        for key, value in data.items():
-            if isinstance(value, (datetime.datetime, datetime.date)):
-                data[key] = mktime(value.timetuple())
-        return data
-
-    def find_user(self, username):
-        return self.db.User.one(dict(username=\
-         re.compile('^%s$' % re.escape(username), re.I)))
-
-    def find_user_by_email(self, email):
-        return self.db.User.one(dict(email=\
-         re.compile('^%s$' % re.escape(email), re.I)))
-
-    def has_user(self, username):
-        return bool(self.find_user(username))
 
     def is_admin_user(self, user):
         return user.email in settings.ADMIN_EMAILS
@@ -227,9 +159,6 @@ class BaseHandler(tornado.web.RequestHandler, HTTPSMixin):
                 else:
                     user_name = "stranger"
                 options['user_name'] = user_name
-
-            # override possible settings
-            user_settings = self.get_current_user_settings(user)
 
         options['settings'] = settings
         options['git_revision'] = self.application.settings['git_revision']
@@ -441,7 +370,7 @@ class GithubMixin(tornado.auth.OAuth2Mixin):
         callback(tornado.escape.json_decode(response.body))
 
 
-@route('/auth/github/')
+@route('/auth/github/', name="github_login")
 class GithubLoginHandler(BaseAuthHandler, GithubMixin):
 
     @tornado.web.asynchronous
@@ -462,16 +391,19 @@ class GithubLoginHandler(BaseAuthHandler, GithubMixin):
                                 extra_params={})#"scope": "read_stream,offline_access"})
 
     def _on_login(self, github_user):
-        user = self.db.User.one({'login':github_user['login']})
+        if not github_user.get('login'):
+            return self.redirect('/?login_failed=true')
+
+        #pprint(github_user)
+        user = self.db.User.one({'login':unicode(github_user['login'])})
         if user is None:
             user = self.db.User()
-            user.login = github_user['login']
-            print "CREATE NEW USER"
+            user.login = unicode(github_user['login'])
+            #print "CREATE NEW USER"
         for key in ('email','name','company','gravatar_id','access_token'):
             if key in github_user:
                 setattr(user, key, unicode(github_user[key]))
         user.save()
-        print repr(user)
         self.set_secure_cookie("user", str(user._id), expires_days=100)
 
         self.redirect('/')
@@ -479,7 +411,7 @@ class GithubLoginHandler(BaseAuthHandler, GithubMixin):
 
 
 
-@route(r'/auth/logout/')
+@route(r'/auth/logout/', name="logout")
 class AuthLogoutHandler(BaseAuthHandler):
     def get(self):
         self.clear_all_cookies()

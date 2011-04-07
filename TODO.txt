@@ -1,5 +1,3 @@
-* TESTS!
-
 * commenting on lines of code
 
 * Comments in HTML instead of AJAX (SEO)
