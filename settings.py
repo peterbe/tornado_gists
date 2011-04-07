@@ -3,6 +3,8 @@ import os
 _ROOT = os.path.dirname(__file__)
 
 TITLE = u"Tornado Gists"
+SUB_TITLE = "explaining Tornado on gist at a time"
+DOMAIN_NAME = "TornadoGists.org"
 APPS = (
   'main',
   'gists',

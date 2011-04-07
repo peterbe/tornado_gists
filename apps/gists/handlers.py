@@ -127,7 +127,7 @@ class EditGistHandler(GistHandler):
         gist.update_date = datetime.datetime.now()
         gist.save()
         url = self.reverse_url('view_gist', gist.gist_id)
-        self.redirect(url + '?edited=yay')
+        self.redirect(url)
 
 
 @route(r'/(\d+)/delete/$', name="delete_gist")

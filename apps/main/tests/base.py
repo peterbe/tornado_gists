@@ -7,7 +7,8 @@ from tornado.httpclient import HTTPRequest
 from tornado.testing import LogTrapTestCase, AsyncHTTPTestCase
 
 import app
-from apps.main.models import User, UserSettings
+from apps.main.models import User
+from utils.http_test_client import TestClient, HTTPClientMixin
 
 
 class BaseModelsTestCase(unittest.TestCase):
@@ -17,7 +18,7 @@ class BaseModelsTestCase(unittest.TestCase):
             self._once = True
             from mongokit import Connection
             self.con = Connection()
-            self.con.register([User, UserSettings])
+            self.con.register([User])
             self.db = self.con.test
             self._emptyCollections()
 
@@ -28,78 +29,6 @@ class BaseModelsTestCase(unittest.TestCase):
 
     def tearDown(self):
         self._emptyCollections()
-
-class HTTPClientMixin(object):
-
-    def get(self, url, data=None, headers=None, follow_redirects=False):
-        if data is not None:
-            if isinstance(data, dict):
-                data = urlencode(data, True)
-            if '?' in url:
-                url += '&%s' % data
-            else:
-                url += '?%s' % data
-        return self._fetch(url, 'GET', headers=headers,
-                           follow_redirects=follow_redirects)
-
-    def post(self, url, data, headers=None, follow_redirects=False):
-        if data is not None:
-            if isinstance(data, dict):
-                data = urlencode(data, True)
-        return self._fetch(url, 'POST', data, headers,
-                           follow_redirects=follow_redirects)
-
-    def _fetch(self, url, method, data=None, headers=None, follow_redirects=True):
-        full_url = self.get_url(url)
-        request = HTTPRequest(full_url, follow_redirects=follow_redirects,
-                              headers=headers, method=method, body=data)
-        self.http_client.fetch(request, self.stop)
-        return self.wait()
-
-
-import Cookie
-class TestClient(HTTPClientMixin):
-    def __init__(self, testcase):
-        self.testcase = testcase
-        self.cookies = Cookie.SimpleCookie()
-
-    def get(self, url, data=None, headers=None, follow_redirects=False):
-        if self.cookies:
-            if headers is None:
-                headers = dict()
-            headers['Cookie'] = self.cookies.output()
-        response = self.testcase.get(url, data=data, headers=headers,
-                                     follow_redirects=follow_redirects)
-        self._update_cookies(response.headers)
-
-        return response
-
-    def post(self, url, data, headers=None, follow_redirects=False):
-        if self.cookies:
-            if headers is None:
-                headers = dict()
-            headers['Cookie'] = self.cookies.output()
-        response = self.testcase.post(url, data=data, headers=headers,
-                                     follow_redirects=follow_redirects)
-        self._update_cookies(response.headers)
-        return response
-
-    def _update_cookies(self, headers):
-        try:
-            sc = headers['Set-Cookie']
-            self.cookies = Cookie.SimpleCookie(sc)
-        except KeyError:
-            return
-
-    def login(self, email, password):
-        data = dict(email=email, password=password)
-        response = self.post('/auth/login/', data, follow_redirects=False)
-        if response.code != 302:
-            raise LoginError(response.body)
-        if 'Error' in response.body:
-            raise LoginError(response.body)
-
-
 
 class BaseHTTPTestCase(AsyncHTTPTestCase, LogTrapTestCase, HTTPClientMixin):
 
@@ -112,6 +41,7 @@ class BaseHTTPTestCase(AsyncHTTPTestCase, LogTrapTestCase, HTTPClientMixin):
 
         self._app.settings['email_backend'] = 'utils.send_mail.backends.locmem.EmailBackend'
         self._app.settings['email_exceptions'] = False
+        self.client = TestClient(self)
 
     def _emptyCollections(self):
         db = self.db

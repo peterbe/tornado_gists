@@ -5,3 +5,5 @@
 * Comments in HTML instead of AJAX (SEO)
 
 * Ability to tag gists
+
+* Ability to pull in existing comments gists

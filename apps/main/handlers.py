@@ -15,9 +15,17 @@ from urllib import quote
 import os.path
 import re
 import logging
+import markdown
 
 from pymongo.objectid import InvalidId, ObjectId
 from pymongo import ASCENDING, DESCENDING
+
+try:
+    import pyatom
+except ImportError:
+    import warnings
+    warnings.warn("pyatom not installed (pip install pyatom)")
+    pyatom = None
 
 # tornado
 import tornado.auth
@@ -282,6 +290,41 @@ class ByLoginHomeHandler(HomeHandler):
         if not user:
             raise tornado.web.HTTPError(404, "No user by that login")
         super(ByLoginHomeHandler, self).get(by=user)
+
+@route('/feeds/atom/latest/', name="feeds_atom_latest")
+class FeedsAtomLatestHandler(BaseHandler):
+
+    def get(self):
+        feed_url = self.request.full_url()
+        base_url = 'http://%s' % self.request.host
+        feed = pyatom.AtomFeed(title=settings.TITLE,
+                               subtitle=settings.SUB_TITLE,
+                               feed_url=feed_url,
+                               url=base_url,
+                               author=settings.DOMAIN_NAME)
+
+        recently = datetime.datetime.now() - datetime.timedelta(seconds=10)
+        gist_search = {'add_date': {'$lt':recently}}
+        for gist in self.db.Gist.find(gist_search)\
+          .limit(20).sort('add_date', DESCENDING):
+            content_type = "text"
+            content = ""
+            if gist.discussion:
+                content = markdown.markdown(gist.discussion)
+                content_type = "html"
+            full_gist_url = 'http://%s%s' % \
+              (self.request.host, self.reverse_url('view_gist', gist.gist_id))
+            feed.add(title="%s: %s" % (gist.gist_id, gist.description),
+                     content=content,
+                     content_type=content_type,
+                     author=gist.user.name,
+                     url=full_gist_url,
+                     id=gist.gist_id,
+                     updated=gist.add_date,
+                     )
+        self.set_header("Content-Type", "application/atom+xml; charset=UTF-8")
+        self.write(feed.to_string())
+
 
 class BaseAuthHandler(BaseHandler):
 

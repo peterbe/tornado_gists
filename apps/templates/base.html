@@ -3,6 +3,7 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
   {% block title %}<title>Tornado Gists - explaining Tornado on gist at a time</title>{% end %}
+  <link rel="alternate" href="{{ reverse_url('feeds_atom_latest') }}" type="application/atom+xml" title="Feed of latest gists" />
   <link rel="shortcut icon" href="{{ static_url('images/favicon.ico') }}" type="image/x-icon" />
   <link rel="stylesheet" href="{{ static_url('css/base.css') }}"/>
   <link rel="stylesheet" href="{{ static_url('css/extra.css') }}"/>
@@ -30,7 +31,7 @@
       </tr>
     </table>
   </div>
-  
+
   <div id="content">
 
     <div id="main">
