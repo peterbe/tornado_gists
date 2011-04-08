@@ -10,7 +10,7 @@ var Comments = (function() {
          _comments = comments;
       },
       display_all : function() {
-         _comments.forEach(function(comment) {
+	 $.each(_comments, function(i, comment) {
             Comments.display(comment);
          });
          $('div.file-comments').fadeIn(400);
