@@ -39,7 +39,11 @@ var Comments = (function() {
             $('<span>').addClass('gravatar').html(
                   comment.user.gravatar_html).appendTo(m);
          }
-         $('<span>').addClass('user').html(comment.user.name).appendTo(m);
+         var username = comment.user.name;
+         if (!username) {
+             username = comment.user.login;
+         }
+         $('<span>').addClass('user').html(username).appendTo(m);
          $('<span>').addClass('ago').html(comment.ago + ' ago').appendTo(m);
          /*
           * $('<a href="#">') .addClass('comment') .text("Reply to this")
