@@ -51,27 +51,6 @@ and run this script:
 At the moment, this covers 87% of all the code on my computer.
 
 
-About indexing the MongoDB
---------------------------
-
-Indexing can be a precious operation and has therefore been removed
-from the code as an automated task. Instead, has to be executed
-manually. It's only really necessary to run once since MongoDB is
-smart enough to maintain the indexes for new documents once everything
-is set up. If you haven't already done so, to ensure all the indexes
-run this:
-
-    ./bin/ensure_indexes.py
-
-At the time of writing there is no way to specify exactly which
-indexes you want to create if you, for example, just want to ensure
-one single index.
-
-To add more indexes, in you app there should be a file called
-`indexes.py` and it should have a function inside called `run()` that
-takes no arguments. The best way to get started with this is to look
-at the existing `indexes.py` files and look at the code there.
-
 
 About running database migrations
 ---------------------------------
@@ -83,7 +62,7 @@ structure. At least, every document must have everything that is
 entered in the class attribute `structure` in the document classes.
 
 To add migration code you can do two things. For simple changes create
-a file called `<myapp>/migrations/always.<whatever>.py` these files
+a file called `<myapp>/migrations/always_<whatever>.py` these files
 are executed whenever you run the script that starts it:
 
     ./bin/run_migrations.py
@@ -95,3 +74,19 @@ stick it in the `migrations` directory. Next time you run
 `003.gender_on_user.py.done` so that you don't accidentally run the
 file again. All `*.done` files are supposed to be ignored by git and
 not added to the repo.
+
+
+
+About indexing the MongoDB
+--------------------------
+
+Indexing can be a precious operation and has therefore been removed
+from the code as an automated task. Instead, has to be executed
+manually. It's only really necessary to run once since MongoDB is
+smart enough to maintain the indexes for new documents once everything
+is set up. If you haven't already done so, to ensure all the indexes
+run this:
+
+    ./bin/run_migrations.py
+
+Adding more indexing is basically the same as running migrations.

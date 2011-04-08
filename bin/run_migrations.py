@@ -7,16 +7,16 @@ import os, sys
 if os.path.abspath(os.curdir) not in sys.path:
     sys.path.insert(0, os.path.abspath(os.curdir))
 
-__version__ = '1.0'
+__version__ = '1.1'
 
 def main(locations, patterns):
     def _filter(filename):
         if filename.endswith('.done') and not filename.endswith('.py'):
             return False
-
         if not (re.findall('^\d+', os.path.basename(filename)) or \
-                re.findall(r'^always\b', os.path.basename(filename))):
-            raise Exception(os.path.basename(filename))
+                re.findall(r'^always', os.path.basename(filename))):
+            return False
+        if os.path.basename(filename).startswith('_'):
             return False
         if os.path.isfile(filename + '.done'):
             return False
@@ -34,7 +34,7 @@ def main(locations, patterns):
     filenames.sort()
     for __, filename in filenames:
         sys.path.insert(0, os.path.abspath('.'))
-        execfile(filename)
+        execfile(filename, globals(), locals())
         t = datetime.datetime.now()
         t = t.strftime('%Y/%m/%d %H:%M:%S')
         if not os.path.basename(filename).startswith('always'):

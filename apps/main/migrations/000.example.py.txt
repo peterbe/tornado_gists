@@ -1,3 +1,6 @@
+# Note: because this file is run from another python doing execfile() you might
+# suffer some weird behaviour if you try to call functions.
+
 from apps.main.models import UserSettings
 from mongokit import Connection
 con = Connection()
