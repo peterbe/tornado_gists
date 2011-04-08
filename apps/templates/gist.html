@@ -90,7 +90,7 @@ p.metadata .ago { padding-left:10px; }
   {% else %}
   <p style="float:right">Added
   {{ modules.TimeSince(gist.add_date) }} ago
-  by <a href="{{ reverse_url('by_user', gist.user.login) }}">{{ gist.user.name }}</a>
+  by <a href="{{ reverse_url('by_user', gist.user.login) }}">{{ gist.user.name if gist.user.name else gist.user.login }}</a>
   {% if gist.user.gravatar_id %}
   {{ modules.ShowGravatar(gist.user.gravatar_id, 30) }}
   {% end %}
