@@ -23,7 +23,7 @@ def main(locations, patterns):
         return True
     def _repr(filename):
         if os.path.basename(filename).startswith('always'):
-            return (0, filename)
+            return (999, filename) # so it's run last
         return (int(re.findall('^(\d+)', os.path.basename(filename))[0]),
                 filename)
     filenames = []
