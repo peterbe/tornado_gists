@@ -41,7 +41,7 @@ Github Gist ID: <input name="gist_id" value=""> <input type="submit" value="Add"
     <abbr title="{{ gist.no_comments }} comments" class="comment-count">{{ gist.no_comments }}</abbr>
     {% end %}
     by
-    <a href="{{ reverse_url('by_user', gist.user.login) }}" class="user">{{ gist.user.name }}</a></li>
+    <a href="{{ reverse_url('by_user', gist.user.login) }}" class="user">{{ gist.user.name if gist.user.name else gist.user.login }}</a></li>
   {% end %}
 </ul>
 {% end %}
@@ -55,7 +55,7 @@ Github Gist ID: <input name="gist_id" value=""> <input type="submit" value="Add"
     <abbr title="{{ gist.no_comments }} comments" class="comment-count">{{ gist.no_comments }}</abbr>
     {% end %}
     by
-    <a href="{{ reverse_url('by_user', gist.user.login) }}" class="user">{{ gist.user.name }}</a></li>
+    <a href="{{ reverse_url('by_user', gist.user.login) }}" class="user">{{ gist.user.name if gist.user.name else gist.user.login }}</a></li>
   {% end %}
 </ul>
 
