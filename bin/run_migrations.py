@@ -2,22 +2,29 @@
 import datetime
 import re
 from glob import glob
-import os
 
+import os, sys
+if os.path.abspath(os.curdir) not in sys.path:
+    sys.path.insert(0, os.path.abspath(os.curdir))
 
-
+__version__ = '1.0'
 
 def main(locations, patterns):
     def _filter(filename):
         if filename.endswith('.done') and not filename.endswith('.py'):
             return False
-        if not re.findall('\d+_', os.path.basename(filename)):
+
+        if not (re.findall('^\d+', os.path.basename(filename)) or \
+                re.findall(r'^always\b', os.path.basename(filename))):
+            raise Exception(os.path.basename(filename))
             return False
         if os.path.isfile(filename + '.done'):
             return False
         return True
     def _repr(filename):
-        return (int(re.findall('(\d+)_', os.path.basename(filename))[0]),
+        if os.path.basename(filename).startswith('always'):
+            return (0, filename)
+        return (int(re.findall('^(\d+)', os.path.basename(filename))[0]),
                 filename)
     filenames = []
     for location in locations:
@@ -30,15 +37,16 @@ def main(locations, patterns):
         execfile(filename)
         t = datetime.datetime.now()
         t = t.strftime('%Y/%m/%d %H:%M:%S')
-        done_filename = filename + '.done'
-        open(done_filename, 'w').write("%s\n" % t)
-        print done_filename        
+        if not os.path.basename(filename).startswith('always'):
+            done_filename = filename + '.done'
+            open(done_filename, 'w').write("%s\n" % t)
+            print done_filename
 
 from settings import APPS
-locations = [os.path.join('apps', x, 'migrations') 
+locations = [os.path.join('apps', x, 'migrations')
              for x in APPS
              if os.path.isdir(os.path.join('apps', x, 'migrations'))]
-             
+
 def run(*args):
     if not args:
         patterns = ['*.py']

@@ -6,7 +6,7 @@
 
 {% block extra_head %}
 <style type="text/css">
-p.discussion { margin-top:1em; margin-bottom:0; }
+#content p.discussion, #content p.tags { margin-top:1em; margin-bottom:0; }
 div.discussion { margin:15px 10px; }
 div.comment { border:1px solid #ccc; margin-bottom:15px; }
 div.comment p { padding:4px; margin: 0 !important;}
@@ -17,6 +17,10 @@ p.metadata .ago { padding-left:10px; }
 .gist-file { margin-top:20px; }
 #comment-link-end { padding-bottom:15px; }
 </style>
+
+{% if edit %}
+<link rel="stylesheet" href="{{ static_url('css/ext/jquery.autocomplete.css') }}"/>
+{% end %}
 
 <link rel="stylesheet" href="{{ static_url('css/ext/jquery.qtip.min.css') }}"/>
 <style type="text/css">
@@ -77,6 +81,8 @@ p.metadata .ago { padding-left:10px; }
 </h2>
 
 {% if edit %}
+  <p class="tags"><label>Tags:</label> (comma separated)</p>
+  <div><input name="tags" style="width:100%" value="{{ ', '.join(gist.tags) }}"/></div>
   <p class="discussion"><label>Discussion:</label></p>
   <div><textarea name="discussion" style="width:100%" cols="80" rows="10">{{ gist.discussion }}</textarea></div>
   <p style="float:right">Text is rendered as <a href="http://daringfireball.net/projects/markdown/syntax">Markdown</a></p>
@@ -97,12 +103,22 @@ p.metadata .ago { padding-left:10px; }
   </p>
   {% end %}
 
+  {% if gist.tags %}
+  <h3>Tags</h3>
+  <div class="tags">
+    {% for i, tag in enumerate(gist.tags) %}
+      <a href="{{ reverse_url('by_tags', tag) }}">{{ tag }}</a>{% if i + 1 < len(gist.tags) %}, {% end %}
+
+    {% end %}
+  </div>
+  {% end %}
+
   {% if gist.discussion %}
   <h3>Discussion</h3>
   <div class="discussion">{{ modules.RenderText(gist.discussion, gist.discussion_format) }}</div>
   {% end %}
-  <div>
 
+  <div>
     {% if gist.owner == gist.user.login %}
     {% else %}
     <p>Originally created
@@ -129,8 +145,8 @@ p.metadata .ago { padding-left:10px; }
   <div class="comment-link-bottom" style="display:none">
       <a href="#" class="comment" data-file="{{ filename }}">Comment on this</a>
   </div>
-  
-  
+
+
 </div>
 {% end %}
 
@@ -140,6 +156,9 @@ p.metadata .ago { padding-left:10px; }
 
 
 {% block extra_js %}
+{% if edit %}
+<script type="text/javascript" src="{{ static_url('js/ext/jquery.autocomplete.pack.js') }}"></script>
+{% end %}
 <script type="text/javascript" src="{{ static_url('js/ext/jquery.qtip.min.js') }}"></script>
 <script type="text/javascript" src="{{ static_url('js/gist.js') }}"></script>
 {% end %}

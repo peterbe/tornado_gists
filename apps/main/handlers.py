@@ -169,7 +169,7 @@ class BaseHandler(tornado.web.RequestHandler):
 @route('/', name="home")
 class HomeHandler(BaseHandler):
 
-    def get(self, by=None):
+    def get(self, by=None, tags=None):
         options = self.get_base_options()
         user = options['user']
         gists_search = {}
@@ -180,9 +180,13 @@ class HomeHandler(BaseHandler):
         options['recent_comments_your_gists_count'] = 0
         options['recent_comments_your_gists'] = []
 
-        if by is not None:
-            gists_search = {'user.$id': by._id}
-            comment_search = {'user.$id': by._id}
+        if by or tags:
+            if by is not None:
+                gists_search = {'user.$id': by._id}
+                comment_search = {'user.$id': by._id}
+            else:
+                gists_search['tags'] = re.compile(
+                  '|'.join(re.escape(tag) for tag in tags), re.I)
         elif options['user']:
             _ids = [x._id for x in
                     self.db.Gist.find({'user.$id': options['user']._id})]
@@ -219,6 +223,15 @@ class ByLoginHomeHandler(HomeHandler):
         if not user:
             raise tornado.web.HTTPError(404, "No user by that login")
         super(ByLoginHomeHandler, self).get(by=user)
+
+@route('/tags/(.*)', name="by_tags")
+class ByTagsHomeHandler(HomeHandler):
+
+    def get(self, tags_str):
+        tags = [x.strip() for x in tags_str.split('/') if x.strip()]
+        if not tags:
+            raise tornado.web.HTTPError(404, "No valid tags")
+        super(ByTagsHomeHandler, self).get(tags=tags)
 
 @route('/feeds/atom/latest/', name="feeds_atom_latest")
 class FeedsAtomLatestHandler(BaseHandler):

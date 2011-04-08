@@ -2,6 +2,7 @@ from pymongo.objectid import ObjectId
 import datetime
 from apps.main.models import BaseDocument, User
 
+
 class Gist(BaseDocument):
     __collection__ = 'gists'
     structure = {
@@ -15,6 +16,7 @@ class Gist(BaseDocument):
       'owner': unicode,
       'repo': unicode,
       # extra
+      'tags': [unicode],
       'discussion': unicode,
       'discussion_format': unicode,
       # persistent cache attributes
@@ -33,7 +35,6 @@ class Gist(BaseDocument):
             _no_comments = self.db.Comment.find({'gist.$id':self._id}).count()
             self._no_comments = _no_comments
         return _no_comments
-
 
 
 class Comment(BaseDocument):

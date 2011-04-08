@@ -29,8 +29,3 @@ class User(BaseDocument):
 
     use_autorefs = True
     required_fields = ['login']
-
-    #indexes = [
-    #  {'fields': 'guid',
-    #   'unique': True},
-    #]

@@ -120,6 +120,8 @@ class EditGistHandler(GistHandler):
         # use gist_id as default description
         description = self.get_argument('description', u'GIST-%s' % gist_id).strip()
         discussion = self.get_argument('discussion', u'')
+        tags = self.get_argument('tags', u'')
+        tags = [x.strip() for x in tags.split(',') if x.strip()]
 
         try:
             # test if the markdown plain text isn't broken
@@ -129,6 +131,7 @@ class EditGistHandler(GistHandler):
         gist.description = description
         gist.discussion = discussion
         gist.discussion_format = u'markdown'
+        gist.tags = tags
         gist.update_date = datetime.datetime.now()
         gist.save()
         url = self.reverse_url('view_gist', gist.gist_id)
@@ -162,6 +165,24 @@ class PreviewMarkdownHandler(BaseHandler):
         html = markdown.markdown(text, safe_mode="escape")
         self.write_json(dict(html=html))
 
+@route(r'/tags.json$', name="autocomplete_tags")
+class AutocompleteTags(BaseHandler):
+    def check_xsrf_cookie(self):
+        pass
+
+    def get(self):
+        search = self.get_argument('q', None)
+        all_tags = set()
+        all_tags_lower = set()
+        search = {'tags': {'$ne': []}}
+        for gist in self.db.Gist.collection.find(search):
+            for tag in gist['tags']:
+                if tag.lower() not in all_tags_lower:
+                    all_tags.add(tag)
+                    all_tags_lower.add(tag.lower())
+        all_tags = list(all_tags)
+        all_tags.sort(lambda x,y:cmp(x.lower(), y.lower()))
+        self.write_json(dict(tags=all_tags))
 
 @route(r'/(\d+)/comments', name="comments")
 class CommentsHandler(GistHandler):
