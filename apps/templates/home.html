@@ -41,7 +41,7 @@ Github Gist ID: <input name="gist_id" value=""> <input type="submit" value="Add"
     <abbr title="{{ gist.no_comments }} comments" class="comment-count">{{ gist.no_comments }}</abbr>
     {% end %}
     by
-    <a href="{{ reverse_url('by_user', gist.user.login) }}" class="user">{{ gist.user.name }}</a></li>
+    <a href="{{ reverse_url('by_user', gist.user.login) }}" class="user">{{ gist.user.name if gist.user.name else gist.user.login }}</a></li>
   {% end %}
 </ul>
 {% end %}
@@ -55,7 +55,7 @@ Github Gist ID: <input name="gist_id" value=""> <input type="submit" value="Add"
     <abbr title="{{ gist.no_comments }} comments" class="comment-count">{{ gist.no_comments }}</abbr>
     {% end %}
     by
-    <a href="{{ reverse_url('by_user', gist.user.login) }}" class="user">{{ gist.user.name }}</a></li>
+    <a href="{{ reverse_url('by_user', gist.user.login) }}" class="user">{{ gist.user.name if gist.user.name else gist.user.login }}</a></li>
   {% end %}
 </ul>
 
@@ -67,7 +67,7 @@ Github Gist ID: <input name="gist_id" value=""> <input type="submit" value="Add"
   {% for comment in recent_comments_your_gists %}
   <li><a href="{{ reverse_url('view_gist', comment.gist.gist_id) }}#comments-{{ comment.file_index_number + 1 }}">{{ modules.TruncateWords(comment.comment, 10) }}</a>
     by
-    <a href="{{ reverse_url('by_user', comment.user.login) }}" class="user">{{ comment.user.name }}</a></li>
+    <a href="{{ reverse_url('by_user', comment.user.login) }}" class="user">{{ comment.user.name if comment.user.name else comment.user.login }}</a></li>
   {% end %}
 </ul>
 {% end %}
@@ -77,7 +77,7 @@ Github Gist ID: <input name="gist_id" value=""> <input type="submit" value="Add"
   {% for comment in recent_comments %}
   <li><a href="{{ reverse_url('view_gist', comment.gist.gist_id) }}#comments-{{ comment.file_index_number + 1 }}">{{ modules.TruncateWords(comment.comment, 10) }}</a>
     by
-    <a href="{{ reverse_url('by_user', comment.user.login) }}" class="user">{{ comment.user.name }}</a></li>
+    <a href="{{ reverse_url('by_user', comment.user.login) }}" class="user">{{ comment.user.name if comment.user.name else comment.user.login }}</a></li>
   {% end %}
 </ul>
 

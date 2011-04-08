@@ -72,38 +72,38 @@ class BaseHandler(tornado.web.RequestHandler):
         error = u'%s: %s' % (err_type, err_val)
         out = StringIO()
         subject = "%r on %s" % (err_val, self.request.path)
-        print >>out, "TRACEBACK:"
+        print >> out, "TRACEBACK:"
         traceback.print_exception(err_type, err_val, err_traceback, 500, out)
         traceback_formatted = out.getvalue()
         print traceback_formatted
-        print >>out, "\nREQUEST ARGUMENTS:"
+        print >> out, "\nREQUEST ARGUMENTS:"
         arguments = self.request.arguments
         if arguments.get('password') and arguments['password'][0]:
             password = arguments['password'][0]
-            arguments['password'] = password[:2] + '*' * (len(password) -2)
+            arguments['password'] = password[:2] + '*' * (len(password) - 2)
         pprint(arguments, out)
 
-        print >>out, "\nCOOKIES:"
+        print >> out, "\nCOOKIES:"
         for cookie in self.cookies:
-            print >>out, "  %s:" % cookie,
-            print >>out, repr(self.get_secure_cookie(cookie))
+            print >> out, "  %s:" % cookie,
+            print >> out, repr(self.get_secure_cookie(cookie))
 
-        print >>out, "\nREQUEST:"
+        print >> out, "\nREQUEST:"
         for key in ('full_url', 'protocol', 'query', 'remote_ip',
                     'request_time', 'uri', 'version'):
-            print >>out, "  %s:" % key,
+            print >> out, "  %s:" % key,
             value = getattr(self.request, key)
             if callable(value):
                 try:
                     value = value()
                 except:
                     pass
-            print >>out, repr(value)
+            print >> out, repr(value)
 
-        print >>out, "\nGIT REVISION: ",
-        print >>out, self.application.settings['git_revision']
+        print >> out, "\nGIT REVISION: ",
+        print >> out, self.application.settings['git_revision']
 
-        print >>out, "\nHEADERS:"
+        print >> out, "\nHEADERS:"
         pprint(dict(self.request.headers), out)
 
         send_email(self.application.settings['email_backend'],
@@ -246,7 +246,7 @@ class FeedsAtomLatestHandler(BaseHandler):
             feed.add(title="%s: %s" % (gist.gist_id, gist.description),
                      content=content,
                      content_type=content_type,
-                     author=gist.user.name,
+                     author=gist.user.name if gist.user.name else gist.user.login,
                      url=full_gist_url,
                      id=gist.gist_id,
                      updated=gist.add_date,
@@ -400,7 +400,7 @@ class GithubLoginHandler(BaseAuthHandler, GithubMixin):
             user = self.db.User()
             user.login = unicode(github_user['login'])
             #print "CREATE NEW USER"
-        for key in ('email','name','company','gravatar_id','access_token'):
+        for key in ('email', 'name', 'company', 'gravatar_id', 'access_token'):
             if key in github_user:
                 setattr(user, key, unicode(github_user[key]))
         user.save()
