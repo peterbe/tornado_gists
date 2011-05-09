@@ -121,6 +121,51 @@ $(function() {
 
       });
    }
+
+   $('a.love').click(function() {
+      var f = $(this).parents('form');
+      $('span.love', f).fadeOut(200);
+      var points_before = $('span.love', f).text();
+      $.post(f.attr('action'), f.serializeArray(), function(response) {
+         if (response.not_logged_in) {
+            $('a.love')
+              .attr('href', $('#login-url').attr('href'))
+                .unbind('click')
+                  .text("Please log in first. Takes about 4 seconds.");
+         } else {
+            $('span.love', f)
+              .text(response.points)
+                .fadeIn(600);
+            $('a.love', f).hide();
+            $('a.unlove, strong.loved', f).show(600);
+         }
+      });
+      return false;
+   });
+
+   $('a.unlove').click(function() {
+      var f = $(this).parents('form');
+      $('span.love', f).fadeOut(200);
+      var points_before = $('span.love', f).text();
+      $.post(f.attr('action'), f.serializeArray(), function(response) {
+         if (response.not_logged_in) {
+            $('a.unlove')
+              .attr('href', $('#login-url').attr('href'))
+                .unbind('click')
+                  .text("Please log in first. Takes about 4 seconds.");
+         } else {
+            $('span.love', f)
+              .text(response.points)
+                .fadeIn(600);
+            $('a.unlove,strong.loved', f).hide();
+            $('a.love', f).show(600);
+
+         }
+      });
+      return false;
+
+   });
+
 });
 
 function _preview_comment_on_change() {

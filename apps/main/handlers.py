@@ -212,10 +212,11 @@ class HomeHandler(BaseHandler):
         options['recent_comments'] = self.db.Comment.find(comment_search)\
           .sort('add_date', DESCENDING).limit(20)
 
-
+        options['gist_points'] = (self.db.GistPoints.find({'points': {'$gt':0}})
+          .sort('points', DESCENDING).limit(10))
         self.render("home.html", **options)
 
-@route('/by/(\w+)', name="by_user")
+@route('/by/(\w+)$', name="by_user")
 class ByLoginHomeHandler(HomeHandler):
 
     def get(self, login):
@@ -428,3 +429,14 @@ class AuthLogoutHandler(BaseAuthHandler):
     def get(self):
         self.clear_all_cookies()
         self.redirect(self.get_next_url())
+
+#@route(r'/auth/fake/(.*)', name="fake_auth")
+#class FakeAuth(BaseAuthHandler):
+#    def get(self, login):
+#        assert self.application.settings['debug']
+#        #for x in self.db.User.find():
+#        #    print repr(x.login)
+#        user = self.db.User.one({'login':login})
+#        self.set_secure_cookie("user", str(user._id), expires_days=1)
+#        #self.write('faked')
+#        self.redirect('/')

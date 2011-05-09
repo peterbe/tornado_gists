@@ -8,10 +8,10 @@ import json
 from base import BaseHTTPTestCase
 import utils.send_mail as mail
 
-class HandlersTestCase(BaseHTTPTestCase):
+class HandlersTestCaseBase(BaseHTTPTestCase):
 
     def setUp(self):
-        super(HandlersTestCase, self).setUp()
+        super(HandlersTestCaseBase, self).setUp()
         # override the otherwise convenient client.login() to one
         # tailored for oauth authentication testing
         from apps.main.handlers import GithubLoginHandler
@@ -22,6 +22,9 @@ class HandlersTestCase(BaseHTTPTestCase):
     def github_oauth_login(self, login):
         response = self.client.get('/auth/github/', {'code':'OK-%s'% login})
         self.assertEqual(response.code, 302)
+
+
+class HandlersTestCase(HandlersTestCaseBase):
 
     def test_homepage(self):
         response = self.client.get('/')
@@ -101,7 +104,8 @@ class HandlersTestCase(BaseHTTPTestCase):
 
         response = self.client.get('/')
         self.assertTrue(self.reverse_url('logout') in response.body)
-        self.assertTrue(MOCK_GITHUB_USERS['peterbe']['name'] in response.body)
+        self.assertTrue(mock_data.MOCK_GITHUB_USERS['peterbe']['name']
+                        in response.body)
 
     def test_github_oauth_failing_login(self):
         response = self.client.get('/auth/github/', {'code':'xxx'})
@@ -119,7 +123,7 @@ class HandlersTestCase(BaseHTTPTestCase):
             self.assertEqual(response.code, 403)
             self.client.login('peterbe')
             response = self.client.post('/add/', {})
-            self.assertEqual(response.code, 404) # no gist id
+            self.assertEqual(response.code, 400) # no gist id
             response = self.client.post('/add/', {'gist_id':'1234'})
             self.assertEqual(response.code, 302)
 
@@ -253,40 +257,10 @@ class HandlersTestCase(BaseHTTPTestCase):
         self.assertEqual(response.code, 302)
         self.assertEqual(self.db.Gist.find().count(), 1)
 
-
-
-MOCK_GITHUB_USERS = {'peterbe':{
- u'access_token': 'xxxxxxxxxxxxxx',
- u'blog': u'www.peterbe.com',
- u'collaborators': 0,
- u'company': u'Mozilla',
- u'created_at': u'2008/09/29 07:09:24 -0700',
- u'disk_usage': 28348,
- u'email': u'peter@fry-it.com',
- u'followers_count': 21,
- u'following_count': 21,
- u'gravatar_id': u'yyyyyyyyyyyyyyyyyyyyyy',
- u'id':100000,
- u'location': u'London, United Kingdom',
- u'login': u'peterbe',
- u'name': u'Peter Bengtsson',
- u'owned_private_repo_count': 2,
- u'permission': None,
- u'plan': {u'collaborators': 1,
-           u'name': u'micro',
-           u'private_repos': 5,
-           u'space': 614400},
- u'private_gist_count': 0,
- u'public_gist_count': 9,
- u'public_repo_count': 23,
- u'session_expires': None,
- u'total_private_repo_count': 2,
- u'type': u'User'}
- }
-
+import mock_data
 def mocked_get_authenticated_user(self, code, callback, **kwargs):
     if code.startswith('OK') and len(code.split('OK-')) == 2:
-        callback(MOCK_GITHUB_USERS[code.split('OK-')[1]])
+        callback(mock_data.MOCK_GITHUB_USERS[code.split('OK-')[1]])
     else:
         callback({})
 
@@ -294,20 +268,9 @@ class _FakeBody(dict):
     def __getattr__(self, key):
         return self[key]
 
-MOCK_GISTS = {'1234':
-    {'gists': [{'comments': [],
-            'created_at': '2011/04/07 10:03:25 -0700',
-            'description': 'Starting tornado with preforking (multiple threads, one port)',
-            'files': ['gistfile1.py'],
-            'owner': 'peterbe',
-            'public': True,
-            'repo': '908208'}]},
-}
-
 
 class MockAsyncHTTPClient(object):
     def fetch(self, url, callback):
         gist_id = url.split('/')[-1]
-        gist = MOCK_GISTS.get(str(gist_id), {})
-
+        gist = mock_data.MOCK_GISTS.get(str(gist_id), {})
         callback(_FakeBody({'body':json.dumps(gist)}))

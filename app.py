@@ -89,9 +89,6 @@ class Application(tornado.web.Application):
             YUI_LOCATION=os.path.join(os.path.dirname(__file__),
                                       "static", "yuicompressor-2.4.2.jar"),
             cdn_prefix=cdn_prefix,
-            #twitter_consumer_key=settings.TWITTER_CONSUMER_KEY,
-            #twitter_consumer_secret=settings.TWITTER_CONSUMER_SECRET,
-
         )
         tornado.web.Application.__init__(self, handlers, **app_settings)
 
@@ -123,8 +120,9 @@ for app_name in settings.APPS:
 def main(): # pragma: no cover
     tornado.options.parse_command_line()
     if options.showurls:
-        for path, class_ in route.get_routes():
-            print path
+        for each in route.get_routes():
+            print each._path.ljust(60),
+            print each.handler_class.__name__
         return
 
     http_server = tornado.httpserver.HTTPServer(Application())

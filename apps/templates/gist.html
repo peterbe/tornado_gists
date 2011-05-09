@@ -16,6 +16,11 @@ p.metadata .user { padding-left:5px; font-weight:bold; }
 p.metadata .ago { padding-left:10px; }
 .gist-file { margin-top:20px; }
 #comment-link-end { padding-bottom:15px; }
+span.love {
+   float:left;
+   margin-right:10px;
+}
+a.unlove { font-size:9pt; }
 </style>
 
 {% if edit %}
@@ -103,6 +108,13 @@ p.metadata .ago { padding-left:10px; }
   </p>
   {% end %}
 
+  <h3>Love</h3>
+  <form action="{{ reverse_url('vote_toggle_gist', gist.gist_id) }}" method="post">{{ xsrf_form_html() }}
+  <span class="love">{{ vote_points }}</span>
+  <strong class="loved" {% if not has_voted_up %}style="display:none"{% end %}>you loved it!</strong>
+  <a href="#" class="unlove" {% if not has_voted_up %}style="display:none"{% end %}>change your mind</a>
+  <a href="#" class="love" {% if has_voted_up %}style="display:none"{% end %}>Add <em>your</em> love!</a>
+  </form>
   {% if gist.tags %}
   <h3>Tags</h3>
   <div class="tags">

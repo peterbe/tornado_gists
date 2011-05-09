@@ -10,6 +10,7 @@ TEST_MODULES = [
     'apps.main.tests.test_models',
     'apps.gists.tests.test_handlers',
     'apps.gists.tests.test_models',
+    'apps.voting.tests.test_handlers',
 ]
 
 def all():

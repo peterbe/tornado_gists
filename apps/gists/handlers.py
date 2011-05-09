@@ -10,7 +10,7 @@ from utils import gravatar_html
 from apps.main.handlers import BaseHandler
 
 
-@route(r'/add/', name="add_gist")
+@route(r'/add/$', name="add_gist")
 class AddGistHandler(BaseHandler):
 
     @tornado.web.asynchronous
@@ -69,7 +69,7 @@ class AddGistHandler(BaseHandler):
         except StopIteration:
             self.redirect(self.reverse_url('view_gist', gist.gist_id))
 
-@route(r'/notfound/', name="gist_not_found")
+@route(r'/notfound/$', name="gist_not_found")
 class GistNotFoundHandler(BaseHandler):
     @tornado.web.authenticated
     def get(self):
@@ -77,9 +77,8 @@ class GistNotFoundHandler(BaseHandler):
         options['gist_id'] = self.get_argument('gist_id', None)
         self.render("gist_not_found.html", **options)
 
+class GistBaseHandler(BaseHandler):
 
-@route(r'/(\d+)/', name="view_gist")
-class GistHandler(BaseHandler):
     def find_gist(self, gist_id):
         try:
             gist = self.db.Gist.one({'gist_id': int(gist_id)})
@@ -88,12 +87,28 @@ class GistHandler(BaseHandler):
         except (ValueError, AssertionError):
             raise tornado.web.HTTPError(404, "Gist not found")
 
+@route(r'/(\d+)/$', name="view_gist")
+class GistHandler(GistBaseHandler):
+
     def get(self, gist_id):
         options = self.get_base_options()
         gist = self.find_gist(gist_id)
         assert gist.gist_id == int(gist_id)
         options['gist'] = gist
         options['edit'] = False
+        _vote_search = {'gist.$id':gist._id, 'comment':None}
+        gist_points = self.db.GistPoints.one({'gist.$id': gist._id})
+        if gist_points:
+            options['vote_points'] = gist_points.points
+        else:
+            options['vote_points'] = 0
+
+        options['has_voted_up'] = False
+        if options['user']:
+            _user_vote_search = dict(_vote_search)
+            _user_vote_search['user.$id'] = options['user']._id
+            options['has_voted_up'] = bool(
+              self.db.Vote.collection.one(_user_vote_search))
         self.render("gist.html", **options)
 
 @route(r'/(\d+)/edit/$', name="edit_gist")
@@ -188,7 +203,6 @@ class AutocompleteTags(BaseHandler):
 class CommentsHandler(GistHandler):
 
     def get(self, gist_id):
-
         #sg = ShowGravatar(self)
         gist = self.find_gist(gist_id)
         comments = []
@@ -219,13 +233,21 @@ class CommentsHandler(GistHandler):
         comment = self.get_argument('comment')
         file_ = self.get_argument('file')
 
-        c = self.db.Comment()
-        c.user = options['user']
-        c.gist = gist
-        c.comment = comment
-        c.comment_format = u'markdown'
-        c.file = file_
-        c.save()
+        # check that the comment hasn't already been posted,
+        # for example by double-clicking the submit button
+        search = {'user.$id': options['user']._id,
+                  'gist.$id': gist._id}
+        for c in self.db.Comment.find(search):
+            if c.comment == comment:
+                break
+        else:
+            c = self.db.Comment()
+            c.user = options['user']
+            c.gist = gist
+            c.comment = comment
+            c.comment_format = u'markdown'
+            c.file = file_
+            c.save()
 
         url = self.reverse_url('view_gist', gist.gist_id)
         anchor = gist.files.index(file_) + 1

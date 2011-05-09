@@ -13,12 +13,14 @@ for key in db.Gist.structure:
         print "for key", repr(key)
         print "fixing", count, "objects"
         type_ = type(db.Gist.structure[key])
-        if type_ is list:
-            default_value = []
-        elif type_ is unicode:
-            default_value = u''
-        else:
-            raise ValueError("Too hard to guess default value for %r" % type_)
+        default_value = db.Gist.default_values.get(key, None)
+        if default_value is None:
+            if type_ is list:
+                default_value = []
+            elif type_ is unicode:
+                default_value = u''
+            else:
+                raise ValueError("Too hard to guess default value for %r" % type_)
 
         for each in db.Gist.find(search):
             each[key] = default_value

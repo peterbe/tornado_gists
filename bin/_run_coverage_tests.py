@@ -10,6 +10,7 @@ COVERAGE_MODULES = [
     'apps.main.handlers',
     'apps.gists.models',
     'apps.gists.handlers',
+    'apps.voting.handlers',
 ]
 
 def all():

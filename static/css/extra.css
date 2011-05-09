@@ -27,3 +27,47 @@ a.comment {
 }
 
 div.clearer {clear: both; line-height: 0; height: 0;}
+
+span.smalllove {
+   font-size:10px;
+   padding-top:0px;
+   line-height:12px;
+   color:white;
+   font-weight:bold;
+   display:block;
+   text-align:center;
+   width:16px;
+   height:16px;
+   background-image:url('/static/images/heart16.png');
+   background-repeat:no-repeat;
+}
+
+span.love {
+   font-size:11px;
+   color:white;
+   font-weight:bold;
+   display:block;
+   text-align:center;
+   width:22px;
+   height:22px;
+   background-image:url('/static/images/heart22.png');
+   background-repeat:no-repeat;
+}
+
+span.biglove {
+   font-size:20px;
+   padding-top:8px;
+   color:white;
+   font-weight:bold;
+   display:block;
+   text-align:center;
+   width:48px;
+   height:48px;
+   background-image:url('/static/images/heart48.png');
+   background-repeat:no-repeat;
+}
+
+#most_loved_gists li {
+   list-style-type: none;
+   margin-left:-15px;
+}

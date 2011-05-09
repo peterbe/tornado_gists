@@ -1,0 +1,31 @@
+{% extends "../base.html" %}
+{% block title %}
+<title>Most loved | Tornado Gists</title>
+{% end %}
+
+{% block main %}
+<h2>Most loved gists</h2>
+
+<table style="width:100%">
+{% for item in gist_points %}
+  <tr>
+    <td><a href="{{ reverse_url('view_gist', item.gist.gist_id) }}">{{ item.gist.gist_id }}: {{ item.gist.description }}</a></td>
+    <td style="text-align:right"><span class="love">{{ item.points }}</span></td>
+  </tr>
+{% end %}
+</table>
+
+<h2>Most loved users</h2>
+
+<table style="width:100%">
+{% for item in user_points %}
+  <tr>
+    <td><a href="{{ reverse_url('most_loved_user', item.user.login) }}">{{ item.user.login }}</a></td>
+    <td style="text-align:right"><span class="love">{{ item.points }}</span></td>
+  </tr>
+{% end %}
+</table>
+
+
+
+{% end %}
