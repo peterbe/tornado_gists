@@ -121,6 +121,26 @@ $(function() {
 
       });
    }
+
+   $('a.love').click(function() {
+      var f = $(this).parents('form');
+      $('span.love', f).fadeOut(200);
+      var points_before = $('span.love', f).text();
+      $.post(f.attr('action'), f.serializeArray(), function(response) {
+         if (response.not_logged_in) {
+            $('a.love')
+              .attr('href', $('#login-url').attr('href'))
+                .unbind('click')
+                  .text("Please log in first. Takes about 4 seconds.");
+         } else {
+            $('span.love', f)
+              .text(response.points)
+                .fadeIn(500);
+            $('a.love', f).remove();
+         }
+      });
+      return false;
+   });
 });
 
 function _preview_comment_on_change() {

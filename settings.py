@@ -8,6 +8,7 @@ DOMAIN_NAME = "TornadoGists.org"
 APPS = (
   'main',
   'gists',
+  'voting',
 )
 
 LOGIN_URL = "/auth/login/"

@@ -16,6 +16,17 @@ p.metadata .user { padding-left:5px; font-weight:bold; }
 p.metadata .ago { padding-left:10px; }
 .gist-file { margin-top:20px; }
 #comment-link-end { padding-bottom:15px; }
+span.love {
+   font-size:11px;
+   color:white;
+   font-weight:bold;
+   display:block;
+   text-align:center;
+   width:22px;
+   height:22px;
+   background-image:url({{ static_url('images/heart22.png') }});
+   background-repeat:no-repeat;
+}
 </style>
 
 {% if edit %}
@@ -103,6 +114,11 @@ p.metadata .ago { padding-left:10px; }
   </p>
   {% end %}
 
+  <h3>Love</h3>
+  <form action="{{ reverse_url('vote_up_gist', gist.gist_id) }}" method="post">{{ xsrf_form_html() }}
+  <span class="love">{{ vote_points }}</span>
+  {% if not has_voted_up %}<a href="#" class="love">Add my love!</a>{% end %}
+  </form>
   {% if gist.tags %}
   <h3>Tags</h3>
   <div class="tags">

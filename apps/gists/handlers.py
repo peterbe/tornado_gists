@@ -94,6 +94,16 @@ class GistHandler(BaseHandler):
         assert gist.gist_id == int(gist_id)
         options['gist'] = gist
         options['edit'] = False
+        _vote_search = {'gist.$id':gist._id, 'comment':None}
+        options['vote_points'] = sum([x['points']
+                                      for x in
+                                      self.db.Vote.collection.find(_vote_search)])
+        options['has_voted_up'] = False
+        if options['user']:
+            _user_vote_search = dict(_vote_search)
+            _user_vote_search['user.$id'] = options['user']._id
+            options['has_voted_up'] = bool(
+              self.db.Vote.collection.one(_user_vote_search))
         self.render("gist.html", **options)
 
 @route(r'/(\d+)/edit/$', name="edit_gist")
