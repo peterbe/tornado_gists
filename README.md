@@ -90,3 +90,15 @@ run this:
     ./bin/run_migrations.py
 
 Adding more indexing is basically the same as running migrations.
+
+
+Updating user details
+---------------------
+
+To update the user details, run the script
+``bin/update-user-details.py`` periodically. You can specify how many
+updates to make maximum. Default is 100. Example usage:
+
+    ./bin/update-user-details.py
+    
+    
