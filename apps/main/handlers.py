@@ -298,8 +298,6 @@ class GithubMixin(tornado.auth.OAuth2Mixin):
           "client_id": client_id,
           "client_secret": client_secret,
         }
-        print "ARGS"
-        print args
 
         fields = set(['id', 'name', 'first_name', 'last_name',
                       'locale', 'picture', 'link'])
@@ -307,7 +305,6 @@ class GithubMixin(tornado.auth.OAuth2Mixin):
             fields.update(extra_fields)
 
         url = self._oauth_request_token_url(**args)
-        print "** URL", repr(url)
         http.fetch(url,
           self.async_callback(self._on_access_token, redirect_uri, client_id,
                               client_secret, callback, fields))
@@ -415,7 +412,9 @@ class GithubLoginHandler(BaseAuthHandler, GithubMixin):
             #print "CREATE NEW USER"
         for key in ('email', 'name', 'company', 'gravatar_id', 'access_token'):
             if key in github_user:
-                setattr(user, key, unicode(github_user[key]))
+                value = github_user[key]
+                if value is not None:
+                    setattr(user, key, unicode(value))
         user.save()
         self.set_secure_cookie("user", str(user._id), expires_days=100)
 
