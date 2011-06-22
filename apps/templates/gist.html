@@ -53,7 +53,7 @@ a.unlove { font-size:9pt; }
   <div class="comment-inner" style="width:500px">
   {% if user %}
   <form action="comments" method="post">
-  <div style="display:hidden">{{ xsrf_form_html() }}
+  <div style="display:hidden">{% raw xsrf_form_html() %}
   <input type="hidden" name="file" value="" />
   <input type="hidden" name="line" value=""/>
   <input type="hidden" name="reply_to" value=""/>
@@ -74,7 +74,7 @@ a.unlove { font-size:9pt; }
 </div><!-- /.comment-outer -->
 
 {% if edit %}
-<form action="." method="post">{{ xsrf_form_html() }}
+<form action="." method="post">{% raw xsrf_form_html() %}
 {% end %}
 
 <h2>{{ gist.gist_id }}:
@@ -100,16 +100,16 @@ a.unlove { font-size:9pt; }
   <a href="{{ reverse_url('edit_gist', gist.gist_id) }}">edit it</a>?</p>
   {% else %}
   <p style="float:right">Added
-  {{ modules.TimeSince(gist.add_date) }} ago
+  {% module TimeSince(gist.add_date) %} ago
   by <a href="{{ reverse_url('by_user', gist.user.login) }}">{{ gist.user.name if gist.user.name else gist.user.login }}</a>
   {% if gist.user.gravatar_id %}
-  {{ modules.ShowGravatar(gist.user.gravatar_id, 30) }}
+  {% module ShowGravatar(gist.user.gravatar_id, 30) %}
   {% end %}
   </p>
   {% end %}
 
   <h3>Love</h3>
-  <form action="{{ reverse_url('vote_toggle_gist', gist.gist_id) }}" method="post">{{ xsrf_form_html() }}
+  <form action="{{ reverse_url('vote_toggle_gist', gist.gist_id) }}" method="post">{% raw xsrf_form_html() %}
   <span class="love">{{ vote_points }}</span>
   <strong class="loved" {% if not has_voted_up %}style="display:none"{% end %}>you loved it!</strong>
   <a href="#" class="unlove" {% if not has_voted_up %}style="display:none"{% end %}>change your mind</a>
@@ -127,7 +127,7 @@ a.unlove { font-size:9pt; }
 
   {% if gist.discussion %}
   <h3>Discussion</h3>
-  <div class="discussion">{{ modules.RenderText(gist.discussion, gist.discussion_format) }}</div>
+  <div class="discussion">{% module RenderText(gist.discussion, gist.discussion_format) %}</div>
   {% end %}
 
   <div>

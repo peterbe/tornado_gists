@@ -8,7 +8,7 @@
 
 {% block main %}
 <form action="/add/" method="post" class="add">
-{{ xsrf_form_html() }}
+{% raw xsrf_form_html() %}
 
 {% if not user %}
 <div id="login_to_add" style="display:none">
@@ -78,7 +78,7 @@ Github Gist ID: <input name="gist_id" value=""> <input type="submit" value="Add"
 <h3>Recent comments to your gists</h3>
 <ul>
   {% for comment in recent_comments_your_gists %}
-  <li><a href="{{ reverse_url('view_gist', comment.gist.gist_id) }}#comments-{{ comment.file_index_number + 1 }}">{{ modules.TruncateWords(comment.comment, 10) }}</a>
+  <li><a href="{{ reverse_url('view_gist', comment.gist.gist_id) }}#comments-{{ comment.file_index_number + 1 }}">{% module TruncateWords(comment.comment, 10) %}</a>
     by
     <a href="{{ reverse_url('by_user', comment.user.login) }}" class="user">{{ comment.user.name if comment.user.name else comment.user.login }}</a></li>
   {% end %}
@@ -88,7 +88,7 @@ Github Gist ID: <input name="gist_id" value=""> <input type="submit" value="Add"
 <h3>Recent comments</h3>
 <ul>
   {% for comment in recent_comments %}
-  <li><a href="{{ reverse_url('view_gist', comment.gist.gist_id) }}#comments-{{ comment.file_index_number + 1 }}">{{ modules.TruncateWords(comment.comment, 10) }}</a>
+  <li><a href="{{ reverse_url('view_gist', comment.gist.gist_id) }}#comments-{{ comment.file_index_number + 1 }}">{% module TruncateWords(comment.comment, 10) %}</a>
     by
     <a href="{{ reverse_url('by_user', comment.user.login) }}" class="user">{{ comment.user.name if comment.user.name else comment.user.login }}</a></li>
   {% end %}
