@@ -313,51 +313,36 @@ class GithubMixin(tornado.auth.OAuth2Mixin):
     def _on_access_token(self, redirect_uri, client_id, client_secret,
                         callback, fields, response):
         if response.error:
-            logging.warning('Facebook auth error: %s' % str(response))
+            logging.warning('GitHub auth error: %s' % response)
             callback(None)
             return
-
-        #print "self.request.arguments"
-        #print self.request.arguments
-        #print "RESPONSE.BODY:"
-        #print response.body
 
         session = {
           "access_token": cgi.parse_qs(response.body)["access_token"][-1],
           "expires": cgi.parse_qs(response.body).get("expires")
         }
-        #print "SESSION"
-        #print session
-        #print "\n"
-
         self.github_request(
-          path="/user/show",
+          path="/user",
           callback=self.async_callback(
               self._on_get_user_info, callback, session, fields),
           access_token=session["access_token"],
           fields=",".join(fields)
           )
 
-
     def _on_get_user_info(self, callback, session, fields, user):
         if user is None:
             callback(None)
             return
-
-        #pprint(user)
-        fieldmap = user['user']
-        print 'session.get("expires")', repr(session.get("expires"))
-
+        fieldmap = dict(user)
         fieldmap.update({"access_token": session["access_token"],
                          "session_expires": session.get("expires")})
         callback(fieldmap)
-
 
     def github_request(self, path, callback, access_token=None,
                            post_args=None, **args):
         """
         """
-        url = "https://github.com/api/v2/json" + path
+        url = "https://api.github.com" + path
         all_args = {}
         if access_token:
             all_args["access_token"] = access_token

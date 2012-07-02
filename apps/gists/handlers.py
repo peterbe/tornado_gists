@@ -21,14 +21,14 @@ class AddGistHandler(BaseHandler):
         if gist:
             return self.redirect(self.reverse_url('view_gist', gist_id))
         http = tornado.httpclient.AsyncHTTPClient()
-        url = "http://gist.github.com/api/v1/json/%s" % gist_id
+        url = "https://api.github.com/gists/%s" % gist_id
         http.fetch(url, callback=lambda r:self.on_gist_found(gist_id, r))
 
     def on_gist_found(self, gist_id, response):
         gist_struct = anyjson.deserialize(response.body)
-        #pprint(gist_struct)
+        pprint(gist_struct)
         try:
-            gist_info = gist_struct['gists'][0]
+            gist_info = gist_struct#['gists'][0]
         except KeyError:
             # TODO: redirect to a warning page
             # gist is not found
@@ -44,8 +44,8 @@ class AddGistHandler(BaseHandler):
         gist.files = [unicode(x) for x in gist_info['files']]
         gist.contents = []
         gist.public = gist_info['public']
-        gist.owner = unicode(gist_info['owner'])
-        gist.repo = unicode(gist_info['repo'])
+        gist.owner = unicode(gist_info['user']['login'])
+        gist.repo = None  #unicode(gist_info['repo'])
         gist.user = self.get_current_user()
         gist.save()
 
@@ -87,6 +87,7 @@ class GistBaseHandler(BaseHandler):
         except (ValueError, AssertionError):
             raise tornado.web.HTTPError(404, "Gist not found")
 
+
 @route(r'/(\d+)/$', name="view_gist")
 class GistHandler(GistBaseHandler):
 
@@ -110,6 +111,7 @@ class GistHandler(GistBaseHandler):
             options['has_voted_up'] = bool(
               self.db.Vote.collection.one(_user_vote_search))
         self.render("gist.html", **options)
+
 
 @route(r'/(\d+)/edit/$', name="edit_gist")
 class EditGistHandler(GistHandler):
@@ -180,6 +182,7 @@ class PreviewMarkdownHandler(BaseHandler):
         html = markdown.markdown(text, safe_mode="escape")
         self.write_json(dict(html=html))
 
+
 @route(r'/tags.json$', name="autocomplete_tags")
 class AutocompleteTags(BaseHandler):
     def check_xsrf_cookie(self):
@@ -198,6 +201,7 @@ class AutocompleteTags(BaseHandler):
         all_tags = list(all_tags)
         all_tags.sort(lambda x,y:cmp(x.lower(), y.lower()))
         self.write_json(dict(tags=all_tags))
+
 
 @route(r'/(\d+)/comments', name="comments")
 class CommentsHandler(GistHandler):
